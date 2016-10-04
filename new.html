@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>CARAGA Region Online Rainfall Monitoring</title>
+
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="description" content="CARAGA Region Online Rainfall Monitoring">
+<meta name="author" content="CSU Phil-LiDAR 1">
+<meta http-equiv="refresh" content="900">
+<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css"/>
+<link rel="stylesheet" type="text/css" href="https://dl.dropboxusercontent.com/u/75734877/LiDAR%20Rainfall%20V2/style.css"/>
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+<script type="text/javascript" src="https://dl.dropboxusercontent.com/u/75734877/LiDAR%20Rainfall%20V2/0B0JBx-GczUoYYk9sc2l5YzBFcDA.js"></script>
+<script type="text/javascript" src="https://dl.dropboxusercontent.com/u/75734877/LiDAR%20Rainfall%20V2/highcharts.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/openlayers/2.13.1/OpenLayers.js"></script>   
+<!--<script type="text/javascript" src="https://maps.google.com/maps/api/js?v=3&amp;sensor=false"></script>-->
+<script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="https://dl.dropboxusercontent.com/u/75734877/LiDAR%20Rainfall%20V2/style-rules.js"></script>
+</head>
+<body>
+<div class="container">
+      <nav class="navbar navbar-fixed-top navbar-default" role="navigation">
+        <div class="container-fluid">
+          <!-- Brand and toggle get grouped for better mobile display -->
+          <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#">CARAGA Region Online Rainfall Monitoring</a>
+          </div>
+          <!-- Collect the nav links, forms, and other content for toggling -->
+          <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav">
+  		  <li><a href="https://carsulidar1.wordpress.com/" target="_blank"> Prepared by CSU Phil-LiDAR 1</a></li>
+           
+            </ul>
+            
+             <ul class="nav navbar-nav navbar-right">
+            <li id="count"></li>
+          </ul>
+            </div><!-- /.navbar-collapse -->
+		</div><!-- /.container-fluid -->
+	  </nav>
+	</div>
+				
+					<div class="container"></div><div class="row" style="width:800px;margin:250px auto 0 auto">
+
+						<div class="alert alert-info alert-dismissible" role="alert" id="help">
+						  <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+						  <strong><span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span> Click the points on the map to display Rainfall Information in graph.</strong>
+						</div>
+					</div></div>
+	<div id="map">
+                        <div id="legend"></div>
+	</div>
+	
+	<div id="footer" class="container-fluid">
+		<div class="row" style="margin-left:5px">&copy; 2015 CSU: Phil-LiDAR 1 Project, Caraga State University, Ampayon, Butuan City. All Rights Reserved.</div>
+	</div>
+    <!--modal-->
+    <div class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" id="modal-content" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="padding:10px"><span aria-hidden="true">&times;</span></button>
+                <div id="wrapper">
+                    <div id="container" width='100%'></div>
+                        <div class="row">
+                          <div class="col-md-6" id="max_rainfall"></div>
+                          <div class="col-md-6" id="accum"></div>
+                        </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Modal -->
+</body>
+</html>
