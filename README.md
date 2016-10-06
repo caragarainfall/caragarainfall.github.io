@@ -1,1 +1,2 @@
 # caragarainfall.github.io
+A site-specific online near-real time rainfall monitoring system for the Caraga Region,Mindanao, Philippines. The system uses web-accessible data recorded by ASTI DOST rain gauges installed in Caraga Region, and was primarily designed to provide the necessary rainfall information such as its intensity and the accumulated rainfall in the last 24 hours in a graphical representation for rapid monitoring and as a tool for flood disaster preparedness. The development of the system is based on OpenLayers and JavasScript technologies.
