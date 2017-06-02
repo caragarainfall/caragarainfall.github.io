@@ -26,71 +26,40 @@
 */
 
 //C//*O/*/R/*/S/*/
-var _0x1e80=["\x63\x72\x6F\x73\x73\x44\x6F\x6D\x61\x69\x6E","\x63\x6F\x72\x73","\x73\x75\x70\x70\x6F\x72\x74","\x75\x72\x6C","\x68\x74\x74\x70\x73\x3A\x2F\x2F\x63\x6F\x72\x73\x2D\x61\x6E\x79\x77\x68\x65\x72\x65\x2E\x68\x65\x72\x6F\x6B\x75\x61\x70\x70\x2E\x63\x6F\x6D\x2F","\x61\x6A\x61\x78\x50\x72\x65\x66\x69\x6C\x74\x65\x72"];jQuery[_0x1e80[5]](function(_0xaf00x1){if(_0xaf00x1[_0x1e80[0]]&&jQuery[_0x1e80[2]][_0x1e80[1]]){_0xaf00x1[_0x1e80[3]]=_0x1e80[4]+_0xaf00x1[_0x1e80[3]]}});
 
 var vector_layer;
 var geojson_format = new OpenLayers.Format.GeoJSON({
 	internalProjection: new OpenLayers.Projection("EPSG:3857"),
 	externalProjection: new OpenLayers.Projection("EPSG:4326")
 });
+var arr_id;
     
-
-function get_sttion(device_id, station_name) {
-    $.ajax({
-        url: "http://fmon.asti.dost.gov.ph/home/index.php/api/data/" + device_id,
-        dataType: 'json',
-        type: "GET",
-        beforeSend: function() {
-            $('#max_rainfall, #accum').hide();
-            $('#container').html("<br/><br/><center><p>Getting <strong>" + station_name + "</strong> data. Please wait.</p></center><br/>");
-        },
-        success: function(data) {
-            $('#max_rainfall, #accum').show();
-            var header,
-                finalAccum = [],
-                rainVal = [],
-                a = [],
-                o = [],
-                tofixAccum,
-                tofixRainVal,
-                firstDate,
-                lastDate,
-                getIndex = 0,
-                diffHours = 0;
+//https://cors-anywhere.herokuapp.com/http://fmon.asti.dost.gov.ph/dataloc.php?param=rv&dfrm=null&dto=null&numloc=1&locs[]=779&data24=1
+function get_sttion(device_id, station_name, rainVal) {
+              var lenlen = rainVal.length;
+              var   finalAccum = [],
+                    a = [],
+                    o = [],
+                    tofixAccum,
+                    tofixRainVal,
+                    firstDate,
+                    lastDate,
+                    getIndex = 0,
+                    diffHours = 0,
+                    i;
                 
-            $.map(data, function(e) {
-                var data = e.data;
-                for (var i = 0; i < data.length; i++) {
-                    lastDate = data[0].dateTimeRead;
-                    firstDate = data[data.length - i - 1].dateTimeRead;
-                    var fLastDate = new Date(lastDate);
-                    var fFirstDate = new Date(firstDate);
-                    diffHours = Math.abs(fLastDate - fFirstDate) / 36e5;
-                    if (diffHours>=24){
-                        getIndex = i;
-                    }
-                }               
-            });
-            
-            $.map(data, function(e) {
-                var loc = e.location;
-                var prov = e.province;
-                header = "Rainfall in " + loc + ", " + prov;
-                var data = e.data;
-                for (var i = getIndex; i < data.length; i++) {
-                    var dataEl = data[data.length - i - 1];
-                    firstDate = data[0].dateTimeRead;
-                    lastDate = data[data.length - 1].dateTimeRead;
-                    var accumRain = parseFloat(dataEl.rain_value);
+            for (i = 0; i < rainVal.length; i++) {
+                    var accumRain = parseFloat(rainVal[i][1]);
                     finalAccum = parseFloat(finalAccum + accumRain);
-                    rainVal = dataEl.rain_value * 4;
+                    rainValpH = rainVal[i][1] * 4;
                     tofixAccum = finalAccum.toFixed(1);
-                    tofixRainVal = rainVal.toFixed(1);
-                    var t = $.format.date(dataEl.dateTimeRead, "MMM dd, yyyy h:mm a");
-                    a.push([t, parseFloat(tofixAccum)]), o.push([t, parseFloat(tofixRainVal)])
-                }
-            });
-            if (a.length > 0) {
+                    tofixRainVal = rainValpH.toFixed(1);
+                    var t = rainVal[i][0];
+                    a.push([t, parseFloat(tofixAccum)]), o.push([t, parseFloat(tofixRainVal)]);
+            }
+
+            $('#max_rainfall, #accum').show();
+           if (a.length > 0) {
                 var aLen = a.length - 1;
                 var options = {
                     chart: {
@@ -102,26 +71,43 @@ function get_sttion(device_id, station_name) {
                     },
                     credits: false,                  
                     title: {
-                        text: header
+                        text: station_name
                     },
                     subtitle: {
                         text: 'Source: <a href="http://fmon.asti.dost.gov.ph/weather/predict/" target="_blank">PREDICT, DOST</a>',
                         x: -20
                     },
                     xAxis: {
-                        categories: [],
-                        minTickInterval: 20,
-                        TickInterval: 20,
-                        tickmarkPlacement: "on",
+                        type: "datetime",
                         labels: {
-                            padding: 5,
-                            align: "center",
-                            style: {
-                                fontSize: "10px"
-                            }
+                          formatter: function() {
+                            return Highcharts.dateFormat("%b %e, %Y %I:%M %p", this.value);
+                          },
+                          dateTimeLabelFormats: {
+                            hour: "%I:%M",
+                            minute: "%I:%M %p",
+                            day: "%e. %b",
+                            week: "%e. %b",
+                            month: "%b '%y",
+                            year: "%Y"
+                          },
+                          padding: 5,
+                          align: "center",
+                          style: {
+                            fontSize: "10px"
+                          }
                         },
-                        reversed: false
-                    },
+                        reversed:false
+                      },
+                      tooltip: {
+                        formatter: function() {
+                          if ("Rainfall Intensity" != this.series.name) return Highcharts.dateFormat("%b %e, %Y %I:%M %p", new Date(this.x)) + "<br/>" + this.series.name + ": <b>" + this.y + " mm</b>";
+                          else return Highcharts.dateFormat("%b %e, %Y %I:%M %p", new Date(this.x)) + "<br/>" + this.series.name + ": <b>" + this.y + " mm/hr.</b>";
+                        },
+                        style: {
+                          fontSize: "11px"
+                        }
+                      },
                     yAxis: [{ //primary y axis  
                         min: 0,
                         max: 100,
@@ -219,6 +205,13 @@ function get_sttion(device_id, station_name) {
                     }]
                 }; //options
                 var chart = new Highcharts.Chart(options);
+                $('#modal-content').on('show.bs.modal', function() {
+                    $('#container').css('visibility', 'hidden');
+                });
+                $('#chart-modal').on('shown.bs.modal', function() {
+                    $('#container').css('visibility', 'initial');
+                    chart.reflow();
+                });  
                 var max = chart.yAxis[0].dataMax,
                     series,
                     i = 0,
@@ -236,7 +229,7 @@ function get_sttion(device_id, station_name) {
                 }
 
                 var maxIndex = Math.max.apply(Math, myIndex);
-                var realDate = o[maxIndex][0];
+                var realDate = Highcharts.dateFormat("%b %e, %Y %I:%M %p", new Date(o[maxIndex][0]));
                 var finalData = a[aLen][1];
 
                 if (max > 0) {
@@ -254,11 +247,7 @@ function get_sttion(device_id, station_name) {
                 $('#max_rainfall, #accum').hide();
                 $('#container').html('<br/><center><strong><p style="color:red">No data available...try again later.</p></strong></center>');
             }
-        },
-        error: function(xhr, ajaxOptions, thrownError) {
-            $('#container').html('<br/><br/><center><strong><p style="color:red">Status: ' + xhr.status + '\n' + thrownError + '</p></strong></center>');
-        }
-    }); //AJAX
+                        
 }
 
 var map, ctrlSelectFeatures;
@@ -296,9 +285,9 @@ var style;
                 new OpenLayers.Rule({
                     // a rule contains an optional filter
                     filter: new OpenLayers.Filter.Comparison({
-                        type: OpenLayers.Filter.Comparison.LESS_THAN,
+                        type: OpenLayers.Filter.Comparison.EQUAL_TO,
                         property: "rain_intensity", // No Data
-                        value: 0
+                        value: -1
                     }),
                     // if a feature matches the above filter, use this symbolizer
                     symbolizer: {
@@ -426,8 +415,9 @@ function init() {
     vector_layer.events.on({
         "featureselected": function(e) {
             deviceID = e.feature.attributes.device_id;
-            station_name = e.feature.attributes.name;
-            get_sttion(deviceID, station_name);
+            station_name = e.feature.attributes.proper_name;
+            date_rainval = e.feature.attributes.rain_val;
+            get_sttion(deviceID, station_name, date_rainval);
             $("#modal-content").modal({
                 show: !0
             });
@@ -1166,7 +1156,8 @@ $(window).load(function() {
 
 
     //list of CARAGA Region Rainfall Station Device ID
-    var arr_id = [611, 1564, 1565, 1561, 712, 779, 118, 707, 706, 711, 155, 713, 710, 607, 609, 592, 739, 589, 608, 606, 569, 570, 612, 587, 567, 591, 564, 563, 566, 565, 568, 588, 1561, 1387, 1388, 1575, 1567, 1577, 1568, 152, 154, 153, 1203, 1204, 708, 709, 1576, 780, 781, 1573, 1574, 782, 121, 120, 1562, 1385, 1386, 1563];
+    arr_id = [611, 1564, 1565, 1561, 712, 779, 118, 707, 706, 711, 155, 713, 710, 607, 609, 592, 739, 589, 608, 606, 569, 570, 612, 587, 567, 591, 564, 563, 566, 565, 568, 588, 1561, 1387, 1388, 1575, 1567, 1577, 1568, 152, 154, 153, 1203, 1204, 708, 709, 1576, 780, 781, 1573, 1574, 782, 121, 120, 1562, 1385, 1386, 1563];
+    //arr_id = [611, 1564, 1565, 1561, 712];
     var json_device_id,
         arr = [],
         jsonObj_device_id,
@@ -1176,14 +1167,14 @@ $(window).load(function() {
 
     for (i = 0; i < arr_id.length; i++) {
         $.ajax({
-            url: "http://fmon.asti.dost.gov.ph/home/index.php/api/data/" + arr_id[i],
+            url: "https://cors-anywhere.herokuapp.com/http://fmon.asti.dost.gov.ph/dataloc.php?param=rv&dfrm=null&dto=null&numloc=1&data24=1&locs[]=" + arr_id[i],
             dataType: 'json',
             type: "GET",
             success: function(data) {
                 counter++;
                 $('#count').text(counter + ' out of ' + arr_id.length + ' stations has been loaded.').fadeIn("slow");
-                $.map(data, function(e) {
-                    var dev_id = e.dev_id;
+                /**$.map(data, function(e) {
+                    var dev_id = arr_id[i];
                     var data = e.data;
                     var max = -1;
                     var rainVal;
@@ -1206,13 +1197,37 @@ $(window).load(function() {
                             jsonObj.features[k].properties[nameR] = rainValue;
                         }
                     }
-                });
+                });//end map
+                **/
+                var latest_rainval;
+                var dev_id = arr_id[counter-1];
+                
+
+                if(data.length == 0){
+                    latest_rainval = -1;
+                    //console.log(dev_id+' '+latest_rainval)
+                }else{
+                    var st_name = Object.keys(data);
+                    var data_len = parseInt(data[st_name].length) - 1;
+                    latest_rainval = parseFloat(data[st_name][data_len][1] * 4);
+                }
+                
+                //console.log(latest_rainval);
+                for (var k = 0; k < len; k++) {
+                        jsonObj_device_id = jsonObj.features[k].properties.device_id;
+                        if (jsonObj_device_id === dev_id) {
+                            var nameR = "rain_intensity";
+                            var rainValue = latest_rainval;
+                            jsonObj.features[k].properties[nameR] = rainValue;
+                            jsonObj.features[k].properties['rain_val'] = data[st_name];
+                        }
+                }
+                //console.log(jsonObj);
                 $('#help').fadeIn("slow");
+                vector_layer.addFeatures(geojson_format.read(jsonObj));
                 //load map after all the rain_value is updated on the GeoJSON data
                 if (counter == arr_id.length) {
                     $('#count').fadeOut("slow");     
-                }else if(counter <= arr_id.length){
-					vector_layer.addFeatures(geojson_format.read(jsonObj));
                 }
             }, //success
             error: function(xhr, ajaxOptions, thrownError) {
