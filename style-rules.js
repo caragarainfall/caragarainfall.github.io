@@ -205,13 +205,6 @@ function get_sttion(device_id, station_name, rainVal) {
                     }]
                 }; //options
                 var chart = new Highcharts.Chart(options);
-                $('#modal-content').on('show.bs.modal', function() {
-                    $('#container').css('visibility', 'hidden');
-                });
-                $('#chart-modal').on('shown.bs.modal', function() {
-                    $('#container').css('visibility', 'initial');
-                    chart.reflow();
-                });  
                 var max = chart.yAxis[0].dataMax,
                     series,
                     i = 0,
