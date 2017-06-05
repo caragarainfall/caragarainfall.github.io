@@ -25,8 +25,6 @@
         for the JavaScript code in this page.
 */
 
-//C//*O/*/R/*/S/*/
-
 var vector_layer;
 var geojson_format = new OpenLayers.Format.GeoJSON({
 	internalProjection: new OpenLayers.Projection("EPSG:3857"),
@@ -36,30 +34,45 @@ var arr_id;
     
 //https://cors-anywhere.herokuapp.com/http://fmon.asti.dost.gov.ph/dataloc.php?param=rv&dfrm=null&dto=null&numloc=1&locs[]=779&data24=1
 function get_sttion(device_id, station_name, rainVal) {
-              var lenlen = rainVal.length;
-              var   finalAccum = [],
-                    a = [],
-                    o = [],
-                    tofixAccum,
-                    tofixRainVal,
-                    firstDate,
-                    lastDate,
-                    getIndex = 0,
-                    diffHours = 0,
-                    i;
-                
-            for (i = 0; i < rainVal.length; i++) {
-                    var accumRain = parseFloat(rainVal[i][1]);
-                    finalAccum = parseFloat(finalAccum + accumRain);
-                    rainValpH = rainVal[i][1] * 4;
-                    tofixAccum = finalAccum.toFixed(1);
-                    tofixRainVal = rainValpH.toFixed(1);
-                    var t = rainVal[i][0];
-                    a.push([t, parseFloat(tofixAccum)]), o.push([t, parseFloat(tofixRainVal)]);
-            }
+	 $.ajax({
+        url: "https://cors-anywhere.herokuapp.com/http://fmon.asti.dost.gov.ph/dataloc.php?param=rv&dfrm=null&dto=null&numloc=1&data24=1&locs[]=" + device_id,
+        dataType: 'json',
+        type: "GET",
+        beforeSend: function() {
+            $('#max_rainfall, #accum').hide();
+            $('#container').html("<br/><br/><center><p>Getting <strong>" + station_name + "</strong> data. Please wait.</p></center><br/>");
+        },
+        success: function(data) {
+			
 
-            $('#max_rainfall, #accum').show();
-           if (a.length > 0) {
+		     if(data.length == 0) {
+				  $('#max_rainfall, #accum').hide();
+                $('#container').html('<br/><center><strong><p style="color:red">No data available...try again later.</p></strong></center>');
+            } else {
+				
+				var st_name = Object.keys(data);
+					var rainVal = data[st_name];
+					var lenlen = rainVal.length;
+					  var   finalAccum = [],
+							a = [],
+							o = [],
+							tofixAccum,
+							tofixRainVal,
+							firstDate,
+							lastDate,
+							getIndex = 0,
+							diffHours = 0,
+							i;
+						
+					for (i = 0; i < rainVal.length; i++) {
+							var accumRain = parseFloat(rainVal[i][1]);
+							finalAccum = parseFloat(finalAccum + accumRain);
+							rainValpH = rainVal[i][1] * 4;
+							tofixAccum = finalAccum.toFixed(1);
+							tofixRainVal = rainValpH.toFixed(1);
+							var t = rainVal[i][0];
+							a.push([t, parseFloat(tofixAccum)]), o.push([t, parseFloat(tofixRainVal)]);
+					}
                 var aLen = a.length - 1;
                 var options = {
                     chart: {
@@ -67,7 +80,8 @@ function get_sttion(device_id, station_name, rainVal) {
                         type: 'line',
                         //width: 800,
                         height: 450,
-                        alignTicks: false
+                        alignTicks: false,
+                        reflow: true
                     },
                     credits: false,                  
                     title: {
@@ -91,7 +105,7 @@ function get_sttion(device_id, station_name, rainVal) {
                             month: "%b '%y",
                             year: "%Y"
                           },
-                          padding: 5,
+                          padding: 15,
                           align: "center",
                           style: {
                             fontSize: "10px"
@@ -205,13 +219,6 @@ function get_sttion(device_id, station_name, rainVal) {
                     }]
                 }; //options
                 var chart = new Highcharts.Chart(options);
-	    	$('#modal-content').on('show.bs.modal', function() {
-                    $('#container').css('visibility', 'hidden');
-                });
-                $('#modal-content').on('shown.bs.modal', function() {
-                    $('#container').css('visibility', 'initial');
-                    chart.reflow();
-                });
                 var max = chart.yAxis[0].dataMax,
                     series,
                     i = 0,
@@ -242,12 +249,13 @@ function get_sttion(device_id, station_name, rainVal) {
                 } else {
                     $('#accum').html("Total Accumulated Rainfall: <strong>" + finalData + " mm</strong>")
                 }
-               
-            } else {
-                $('#max_rainfall, #accum').hide();
-                $('#container').html('<br/><center><strong><p style="color:red">No data available...try again later.</p></strong></center>');
+                $('#max_rainfall, #accum').show();
             }
-                        
+        },
+        error: function(xhr, ajaxOptions, thrownError) {
+            $('#container').html('<br/><br/><center><strong><p style="color:red">Status: ' + xhr.status + '\n' + thrownError + '</p></strong></center>');
+        }
+    }); //AJAX           
 }
 
 var map, ctrlSelectFeatures;
@@ -417,17 +425,18 @@ function init() {
             deviceID = e.feature.attributes.device_id;
             station_name = e.feature.attributes.proper_name;
             date_rainval = e.feature.attributes.rain_val;
-            get_sttion(deviceID, station_name, date_rainval);
+            
             $("#modal-content").modal({
                 show: !0
-            });
+            });        
+            get_sttion(deviceID, station_name, date_rainval);
         },
         "featureunselected": function() {
             $("#modal-content").modal({
                 show: !1
             });
-            $('#max_rainfall, #accum').hide();
-            $('#container').html('');
+             $('#max_rainfall, #accum').hide();       
+			 $('#container').empty();
         }
     });
 
