@@ -298,9 +298,9 @@ var style;
                 new OpenLayers.Rule({
                     // a rule contains an optional filter
                     filter: new OpenLayers.Filter.Comparison({
-                        type: OpenLayers.Filter.Comparison.EQUAL_TO,
+                        type: OpenLayers.Filter.Comparison.LESS_THAN,
                         property: "rain_intensity", // No Data
-                        value: -1
+                        value: 0
                     }),
                     // if a feature matches the above filter, use this symbolizer
                     symbolizer: {
@@ -379,11 +379,6 @@ var style;
         }
     );
 
-
-function rainfall(myJson) {
-    vector_layer.addFeatures(geojson_format.read(myJson));
-   
-}
 
 function init() {
     map = new OpenLayers.Map("map", {
@@ -1188,37 +1183,41 @@ $(window).load(function() {
             success: function(html_d) {
 				var data = jQuery.parseJSON(html_d);
                 counter++;
-                $('#count').text(counter + ' out of ' + arr_id.length + ' stations has been loaded.').fadeIn("slow");
-				
-                var latest_rainval;
                 var dev_id = arr_id[counter-1];
-                var st_name = Object.keys(data);
-				var data_len = data[st_name].length;
-				
-				//console.log(data_len);
-                if(data_len == 0){
-                    latest_rainval = -1;
-                    //console.log(dev_id+' '+latest_rainval)
+
+                $('#count').text(counter + ' out of ' + arr_id.length + ' stations has been loaded.').fadeIn("slow");
+				if ((typeof data === 'object') && !($.isEmptyObject(data))){
+                    var latest_rainval;             
+                    var st_name = Object.keys(data);
+                    //console.log(st_name);
+                    var data_len = data[st_name].length;
+                    var lst_indx = parseInt(data_len - 1);
+                    latest_rainval = parseFloat(data[st_name][lst_indx][1] * 4);
+                    console.log(st_name+' Latest Rainfall Value: '+latest_rainval+' mm/hr')
+                    
+                    
+                    //console.log(latest_rainval);
+                    for (var k = 0; k < len; k++) {
+                            jsonObj_device_id = jsonObj.features[k].properties.device_id;
+                            if (jsonObj_device_id === dev_id) {
+                                jsonObj.features[k].properties["rain_intensity"] = latest_rainval;
+                                 vector_layer.addFeatures(geojson_format.read(jsonObj));
+                            }
+                    }
                 }else{
-                    //var st_name = Object.keys(data);
-                    var data_len = parseInt(data[st_name].length) - 1;
-                    latest_rainval = parseFloat(data[st_name][data_len][1] * 4);
-					console.log(st_name+' Latest Rainfall Value: '+latest_rainval+' mm/hr')
+                    for (var k = 0; k < len; k++) {
+                            jsonObj_device_id = jsonObj.features[k].properties.device_id;
+                            if (jsonObj_device_id === dev_id) {
+                                jsonObj.features[k].properties["rain_intensity"] = -1;
+                                vector_layer.addFeatures(geojson_format.read(jsonObj));
+                            }
+                    }
+
                 }
-                
-                //console.log(latest_rainval);
-                for (var k = 0; k < len; k++) {
-                        jsonObj_device_id = jsonObj.features[k].properties.device_id;
-                        if (jsonObj_device_id === dev_id) {
-                            var nameR = "rain_intensity";
-                            var rainValue = latest_rainval;
-                            jsonObj.features[k].properties[nameR] = rainValue;
-                            jsonObj.features[k].properties['rain_val'] = data[st_name];
-                        }
-                }
+
                 //console.log(jsonObj);
                 $('#help').fadeIn("slow");
-                vector_layer.addFeatures(geojson_format.read(jsonObj));
+               
                 //load map after all the rain_value is updated on the GeoJSON data
                 if (counter == arr_id.length) {
                     $('#count').fadeOut("slow");     
