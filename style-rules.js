@@ -1170,8 +1170,9 @@ $(window).load(function() {
 
 
     //list of CARAGA Region Rainfall Station Device ID
-    arr_id = [611, 1564, 1565, 1561, 712, 779, 118, 707, 706, 711, 155, 713, 710, 607, 609, 592, 739, 589, 608, 606, 569, 570, 612, 587, 567, 591, 564, 563, 566, 565, 568, 588, 1561, 1387, 1388, 1575, 1567, 1577, 1568, 152, 154, 153, 1203, 1204, 708, 709, 1576, 780, 781, 1573, 1574, 782, 121, 120, 1562, 1385, 1386, 1563];
-    //arr_id = [611, 1564, 1565, 1561, 712];
+    arr_id = [118,711,779,707,713,155,611,712,710,706,739,566,570,564,592,607,608,609,591,588,568,612,565,563,1561,1387,1388,1575,1567,1577,1568,152,154,153,1203,1204,708,709,1576,780,781,1573,1574,121,120,782,1562,1385,1386,1565,1563];
+    //arr_id = [118,711,779];
+	//arr_id = [611, 1564, 1565, 1561, 712];
     var json_device_id,
         arr = [],
         jsonObj_device_id,
@@ -1185,44 +1186,21 @@ $(window).load(function() {
             dataType: 'html',
             type: "GET",
             success: function(html_d) {
-				 var data = jQuery.parseJSON(html_d);
+				var data = jQuery.parseJSON(html_d);
                 counter++;
                 $('#count').text(counter + ' out of ' + arr_id.length + ' stations has been loaded.').fadeIn("slow");
-                /**$.map(data, function(e) {
-                    var dev_id = arr_id[i];
-                    var data = e.data;
-                    var max = -1;
-                    var rainVal;
-                    arr = [];
-                    if (data) {
-                        for (var j = 0; j < data.length; j++) {
-                            rainVal = data[j].rain_value || 0;
-                            arr[j] = parseFloat(rainVal);
-                        }
-                    }
-                    if (arr.length) {
-                        max = parseFloat(arr[0] * 4);
-                    }
-
-                    for (var k = 0; k < len; k++) {
-                        jsonObj_device_id = jsonObj.features[k].properties.device_id;
-                        if (jsonObj_device_id === dev_id) {
-                            var nameR = "rain_intensity";
-                            var rainValue = max;
-                            jsonObj.features[k].properties[nameR] = rainValue;
-                        }
-                    }
-                });//end map
-                **/
+				
                 var latest_rainval;
                 var dev_id = arr_id[counter-1];
-                
-
-                if(data.length == 0){
+                var st_name = Object.keys(data);
+				var data_len = data[st_name].length;
+				
+				//console.log(data_len);
+                if(data_len == 0){
                     latest_rainval = -1;
                     //console.log(dev_id+' '+latest_rainval)
                 }else{
-                    var st_name = Object.keys(data);
+                    //var st_name = Object.keys(data);
                     var data_len = parseInt(data[st_name].length) - 1;
                     latest_rainval = parseFloat(data[st_name][data_len][1] * 4);
 					console.log(st_name+' Latest Rainfall Value: '+latest_rainval+' mm/hr')
