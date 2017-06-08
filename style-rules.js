@@ -36,15 +36,14 @@ var arr_id;
 function get_sttion(device_id, station_name, rainVal) {
 	 $.ajax({
         url: "https://cors-anywhere.herokuapp.com/http://fmon.asti.dost.gov.ph/dataloc.php?param=rv&dfrm=null&dto=null&numloc=1&data24=1&locs[]=" + device_id,
-        dataType: 'json',
+        dataType: 'html',
         type: "GET",
         beforeSend: function() {
             $('#max_rainfall, #accum').hide();
             $('#container').html("<br/><br/><center><p>Getting <strong>" + station_name + "</strong> data. Please wait.</p></center><br/>");
         },
-        success: function(data) {
-			
-
+        success: function(html_d) {
+			  var data = jQuery.parseJSON(html_d);
 		     if(data.length == 0) {
 				  $('#max_rainfall, #accum').hide();
                 $('#container').html('<br/><center><strong><p style="color:red">No data available...try again later.</p></strong></center>');
@@ -63,7 +62,13 @@ function get_sttion(device_id, station_name, rainVal) {
 							getIndex = 0,
 							diffHours = 0,
 							i;
-						
+					for(var k=0;k < rainVal.length; k++){
+						firstDate = rainVal[rainVal.length - k - 1][0];
+						lastDate = rainVal[rainVal.length - 1][0];
+						diffHours = Math.abs(lastDate - firstDate) / 36e5;
+						console.log(diffHours);
+					}
+					
 					for (i = 0; i < rainVal.length; i++) {
 							var accumRain = parseFloat(rainVal[i][1]);
 							finalAccum = parseFloat(finalAccum + accumRain);
@@ -1177,9 +1182,10 @@ $(window).load(function() {
     for (i = 0; i < arr_id.length; i++) {
         $.ajax({
             url: "https://cors-anywhere.herokuapp.com/http://fmon.asti.dost.gov.ph/dataloc.php?param=rv&dfrm=null&dto=null&numloc=1&data24=1&locs[]=" + arr_id[i],
-            dataType: 'json',
+            dataType: 'html',
             type: "GET",
-            success: function(data) {
+            success: function(html_d) {
+				 var data = jQuery.parseJSON(html_d);
                 counter++;
                 $('#count').text(counter + ' out of ' + arr_id.length + ' stations has been loaded.').fadeIn("slow");
                 /**$.map(data, function(e) {
@@ -1219,6 +1225,7 @@ $(window).load(function() {
                     var st_name = Object.keys(data);
                     var data_len = parseInt(data[st_name].length) - 1;
                     latest_rainval = parseFloat(data[st_name][data_len][1] * 4);
+					console.log(st_name+' Latest Rainfall Value: '+latest_rainval+' mm/hr')
                 }
                 
                 //console.log(latest_rainval);
