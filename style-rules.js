@@ -1184,6 +1184,7 @@ $(window).load(function() {
 				var data = jQuery.parseJSON(html_d);
                 counter++;
                 var dev_id = arr_id[counter-1];
+				console.log(dev_id);
 
                 $('#count').text(counter + ' out of ' + arr_id.length + ' stations has been loaded.').fadeIn("slow");
 				if ((typeof data === 'object') && !($.isEmptyObject(data))){
@@ -1193,7 +1194,7 @@ $(window).load(function() {
                     var data_len = data[st_name].length;
                     var lst_indx = parseInt(data_len - 1);
                     latest_rainval = parseFloat(data[st_name][lst_indx][1] * 4);
-                    console.log(st_name+' Latest Rainfall Value: '+latest_rainval+' mm/hr')
+                    //console.log(st_name+' Latest Rainfall Value: '+latest_rainval+' mm/hr : ' +dev_id+ ' : '+jsonObj_device_id)
                     
                     
                     //console.log(latest_rainval);
@@ -1201,7 +1202,8 @@ $(window).load(function() {
                             jsonObj_device_id = jsonObj.features[k].properties.device_id;
                             if (jsonObj_device_id === dev_id) {
                                 jsonObj.features[k].properties["rain_intensity"] = latest_rainval;
-                                 vector_layer.addFeatures(geojson_format.read(jsonObj));
+                                 //vector_layer.addFeatures(geojson_format.read(jsonObj));
+								 console.log(st_name+' Latest Rainfall Value: '+latest_rainval+' mm/hr : ' +dev_id+ ' : '+jsonObj_device_id)
                             }
                     }
                 }else{
@@ -1209,7 +1211,8 @@ $(window).load(function() {
                             jsonObj_device_id = jsonObj.features[k].properties.device_id;
                             if (jsonObj_device_id === dev_id) {
                                 jsonObj.features[k].properties["rain_intensity"] = -1;
-                                vector_layer.addFeatures(geojson_format.read(jsonObj));
+                                //vector_layer.addFeatures(geojson_format.read(jsonObj));
+								console.log(st_name+' Latest Rainfall Value: -1 mm/hr : ' +dev_id+ ' : '+jsonObj_device_id)
                             }
                     }
 
@@ -1221,6 +1224,8 @@ $(window).load(function() {
                 //load map after all the rain_value is updated on the GeoJSON data
                 if (counter == arr_id.length) {
                     $('#count').fadeOut("slow");     
+                }else if(counter <= arr_id.length){
+			vector_layer.addFeatures(geojson_format.read(jsonObj));
                 }
             }, //success
             error: function(xhr, ajaxOptions, thrownError) {
