@@ -66,10 +66,14 @@ function get_sttion(device_id, station_name, rainVal) {
 						firstDate = rainVal[rainVal.length - k - 1][0];
 						lastDate = rainVal[rainVal.length - 1][0];
 						diffHours = Math.abs(lastDate - firstDate) / 36e5;
-						console.log(diffHours);
+						console.log(diffHours+': index: '+ parseFloat(rainVal.length - k - 1));
+						if(diffHours==24){
+							getIndex = parseFloat(rainVal.length - k - 1)
+						}
+						
 					}
 					
-					for (i = 0; i < rainVal.length; i++) {
+					for (i = getIndex; i < rainVal.length; i++) {
 							var accumRain = parseFloat(rainVal[i][1]);
 							finalAccum = parseFloat(finalAccum + accumRain);
 							rainValpH = rainVal[i][1] * 4;
@@ -1167,7 +1171,6 @@ $(window).load(function() {
     //list of CARAGA Region Rainfall Station Device ID
     arr_id = [118,711,779,707,713,155,611,712,710,706,739,566,570,564,592,607,608,609,591,588,568,612,565,563,1561,1387,1388,1575,1567,1577,1568,152,154,153,1203,1204,708,709,1576,780,781,1573,1574,121,120,782,1562,1385,1386,1565,1563];
     //arr_id = [118,711,779];
-	//arr_id = [611, 1564, 1565, 1561, 712];
     var json_device_id,
         arr = [],
         jsonObj_device_id,
@@ -1218,14 +1221,14 @@ $(window).load(function() {
 
                 }
 
-                //console.log(jsonObj);
+                console.log(jsonObj);
                 $('#help').fadeIn("slow");
                
                 //load map after all the rain_value is updated on the GeoJSON data
                 if (counter == arr_id.length) {
                     $('#count').fadeOut("slow");     
                 }else if(counter <= arr_id.length){
-			vector_layer.addFeatures(geojson_format.read(jsonObj));
+					vector_layer.addFeatures(geojson_format.read(jsonObj));
                 }
             }, //success
             error: function(xhr, ajaxOptions, thrownError) {
