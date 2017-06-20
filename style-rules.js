@@ -35,7 +35,7 @@ var arr_id;
 //https://cors-anywhere.herokuapp.com/http://fmon.asti.dost.gov.ph/dataloc.php?param=rv&dfrm=null&dto=null&numloc=1&locs[]=779&data24=1
 function get_sttion(device_id, station_name, rainVal) {
   $.ajax({
-    url: "https://cors-anywhere.herokuapp.com/http://fmon.asti.dost.gov.ph/dataloc.php?param=rv&dfrm=null&dto=null&numloc=1&data24=1&locs[]=" + device_id,
+    url: "https://cors-for-rainfall.herokuapp.com/http://fmon.asti.dost.gov.ph/dataloc.php?param=rv&dfrm=null&dto=null&numloc=1&data24=1&locs[]=" + device_id,
     dataType: 'html',
     type: "GET",
     beforeSend: function() {
@@ -1179,7 +1179,7 @@ $(window).load(function() {
     i;
   for (i = 0; i < arr_id.length; i++) {
     $.ajax({
-      url: "https://cors-anywhere.herokuapp.com/http://fmon.asti.dost.gov.ph/dataloc.php?param=rv&dfrm=null&dto=null&numloc=1&data24=1&locs[]=" + arr_id[i],
+      url: "https://cors-for-rainfall.herokuapp.com/http://fmon.asti.dost.gov.ph/dataloc.php?param=rv&dfrm=null&dto=null&numloc=1&data24=1&locs[]=" + arr_id[i],
       dataType: 'html',
       type: "GET",
       success: function(html_d) {
