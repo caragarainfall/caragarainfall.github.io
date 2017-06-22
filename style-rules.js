@@ -302,9 +302,9 @@ style = new OpenLayers.Style(
       new OpenLayers.Rule({
         // a rule contains an optional filter
         filter: new OpenLayers.Filter.Comparison({
-          type: OpenLayers.Filter.Comparison.LESS_THAN,
+          type: OpenLayers.Filter.Comparison.EQUAL_TO,
           property: "rain_intensity", // No Data
-          value: 0
+          value: -1
         }),
         // if a feature matches the above filter, use this symbolizer
         symbolizer: {
@@ -328,7 +328,7 @@ style = new OpenLayers.Style(
         filter: new OpenLayers.Filter.Comparison({
           type: OpenLayers.Filter.Comparison.BETWEEN,
           property: "rain_intensity", // Light
-          lowerBoundary: 0.00000001,
+          lowerBoundary: 0.00000000000001,
           upperBoundary: 2.5
         }),
         // if a feature matches the above filter, use this symbolizer
