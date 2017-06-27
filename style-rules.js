@@ -1176,8 +1176,8 @@ $(window).load(function() {
     jsonObj_device_id,
     len = jsonObj.features.length,
     counter = 0,
-    i;
-  for (i = 0; i < arr_id.length; i++) {
+    i=0;
+  for (i; i < arr_id.length; i++) {
     $.ajax({
       url: "https://cors-for-rainfall.herokuapp.com/http://fmon.asti.dost.gov.ph/dataloc.php?param=rv&dfrm=null&dto=null&numloc=1&data24=1&locs[]=" + arr_id[i],
       dataType: 'html',
@@ -1186,7 +1186,7 @@ $(window).load(function() {
         //console.log(html_d);
         var data = jQuery.parseJSON(html_d);
         counter++;
-        var dev_id = arr_id[counter - 1];
+        var dev_id = arr_id[counter];
         //console.log(dev_id);
         var new_json;
 
