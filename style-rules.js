@@ -1185,8 +1185,9 @@ $(window).load(function() {
       success: function(html_d) {
         //console.log(html_d);
         var data = jQuery.parseJSON(html_d);
-        counter++;
+        
         var dev_id = arr_id[counter];
+         counter++;
         //console.log(dev_id);
         var new_json;
 
