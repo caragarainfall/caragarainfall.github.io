@@ -1273,9 +1273,10 @@ $(window).load(function() {
         if (counter == arr_id.length) {
           $('#count').fadeOut("slow");
         } else if (counter <= arr_id.length) {
-          vector_layer.addFeatures(geojson_format.read(new_json));
+          
         }
         //console.log(vector_layer);
+              vector_layer.addFeatures(geojson_format.read(new_json));
       }, //success
       error: function(xhr, ajaxOptions, thrownError) {
         $('#count').html('<strong><p style="color:red">Unable to access remaining stations. Try again later.</p></strong>');
