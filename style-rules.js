@@ -1261,7 +1261,7 @@ $(window).load(function() {
                   }]
                 }
                 //vector_layer.addFeatures(geojson_format.read(jsonObj));
-              console.log(prop_name+': '+st_name + ' Latest Rainfall Value: -1 mm/hr : ' + dev_id + ' : ' + jsonObj_device_id)
+              console.log(prop_name+' Latest Rainfall Value: -1 mm/hr : ' + dev_id + ' : ' + jsonObj_device_id)
             }
           }
 
