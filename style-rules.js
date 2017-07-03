@@ -1177,110 +1177,114 @@ $(window).load(function() {
     len = jsonObj.features.length,
     counter = 0,
     i=0;
-  for (i; i < arr_id.length; i++) {
-    $.ajax({
-      url: "https://cors-for-rainfall.herokuapp.com/http://fmon.asti.dost.gov.ph/dataloc.php?param=rv&dfrm=null&dto=null&numloc=1&data24=1&locs[]=" + arr_id[i],
-      dataType: 'html',
-      type: "GET",
-      success: function(html_d) {
-        //console.log(html_d);
-        var data = jQuery.parseJSON(html_d);
-        
-        var dev_id = arr_id[counter];
-         counter++;
-        //console.log(dev_id);
-        var new_json;
+for (i; i < arr_id.length; i++) {
+		//console.log(i);
+        $.ajax({
+            url: "https://cors-for-rainfall.herokuapp.com/http://fmon.asti.dost.gov.ph/dataloc.php?param=rv&dfrm=null&dto=null&numloc=1&data24=1&locs[]=" + arr_id[i],
+            dataType: 'html',
+            type: "GET",
+            success: function(html_d) {
+							//console.log(html_d);
+							var data = jQuery.parseJSON(html_d);
 
-        $('#count').text(counter + ' out of ' + arr_id.length + ' stations has been loaded.').fadeIn("slow");
-        if ((typeof data === 'object') && !($.isEmptyObject(data))) {
-          var latest_rainval;
-          var st_name = Object.keys(data);
-          //console.log(st_name);
-          var data_len = data[st_name].length;
-          var lst_indx = parseInt(data_len - 1);
-          latest_rainval = parseFloat(data[st_name][lst_indx][1] * 4);
-          //console.log(st_name+' Latest Rainfall Value: '+latest_rainval+' mm/hr : ' +dev_id+ ' : '+jsonObj_device_id)
+              var dev_id = arr_id[counter];
+
+							//console.log("counter :"+ dev_id);
 
 
-          //console.log(latest_rainval);
-          for (var k = 0; k < len; k++) {
-            jsonObj_device_id = jsonObj.features[k].properties.device_id;
-            if (jsonObj_device_id === dev_id) {
-              //jsonObj.features[k].properties["rain_intensity"] = latest_rainval;
-              var coords = jsonObj.features[k].geometry.coordinates;
-              var prop_name = jsonObj.features[k].properties.proper_name;
-              var d = jsonObj.features[k].properties.D;
-              var e = jsonObj.features[k].properties.E;
-              new_json = {
-                  "type": "FeatureCollection",
-                  "features": [{
-                    "type": "Feature",
-                    "geometry": {
-                      "type": "Point",
-                      "coordinates": coords
-                    },
-                    "properties": {
-                      "A": counter,
-                      "proper_name": prop_name,
-                      "device_id": jsonObj_device_id,
-                      "rain_intensity": latest_rainval,
-                      "D": d,
-                      "E": e
+
+								if ((typeof data === 'object') && !($.isEmptyObject(data))){
+                    var latest_rainval;
+                    var st_name = Object.keys(data);
+                    //console.log(st_name);
+                    var data_len = data[st_name].length;
+                    var lst_indx = parseInt(data_len - 1);
+                    latest_rainval = parseFloat(data[st_name][lst_indx][1] * 4);
+                    //console.log(st_name+' Latest Rainfall Value: '+latest_rainval+' mm/hr : ' +dev_id+ ' : '+jsonObj_device_id)
+
+
+                    //console.log(latest_rainval);
+                    for (var k = 0; k < len; k++) {
+                            jsonObj_device_id = jsonObj.features[k].properties.device_id;
+                            if (jsonObj_device_id === dev_id) {
+                                //jsonObj.features[k].properties["rain_intensity"] = latest_rainval;
+																var coords = jsonObj.features[k].geometry.coordinates;
+																var prop_name = jsonObj.features[k].properties.proper_name;
+																var d = jsonObj.features[k].properties.D;
+																var e =  jsonObj.features[k].properties.E;
+																var new_json1 = {
+																	  "type": "FeatureCollection",
+																	  "features": [{
+																		    "type": "Feature",
+																		    "geometry": {
+																		      "type": "Point",
+																		      "coordinates": coords
+																		    },
+																		    "properties": {
+																		      "A": counter,
+																		      "proper_name": prop_name,
+																		      "device_id": jsonObj_device_id,
+																					"rain_intensity" : latest_rainval,
+																		      "D": d,
+																		      "E": e
+																		    }
+																	  	}]
+																		}
+                                vector_layer.addFeatures(geojson_format.read(new_json1));
+								 							 	console.log(prop_name+' Latest Rainfall Value: '+latest_rainval+' mm/hr : ' +dev_id+ ' : '+jsonObj_device_id)
+                            }
                     }
-                  }]
-                }
-                //vector_layer.addFeatures(geojson_format.read(jsonObj));
-               console.log(prop_name+': '+st_name+' Latest Rainfall Value: '+latest_rainval+' mm/hr : ' +dev_id+ ' : '+jsonObj_device_id)
-            }
-          }
-        } else {
-          for (var k = 0; k < len; k++) {
-            jsonObj_device_id = jsonObj.features[k].properties.device_id;
-            if (jsonObj_device_id === dev_id) {
-              jsonObj.features[k].properties["rain_intensity"] = -1;
-              var coords = jsonObj.features[k].geometry.coordinates;
-              var prop_name = jsonObj.features[k].properties.proper_name;
-              var d = jsonObj.features[k].properties.D;
-              var e = jsonObj.features[k].properties.E;
-              new_json = {
-                  "type": "FeatureCollection",
-                  "features": [{
-                    "type": "Feature",
-                    "geometry": {
-                      "type": "Point",
-                      "coordinates": coords
-                    },
-                    "properties": {
-                      "A": counter,
-                      "proper_name": prop_name,
-                      "device_id": jsonObj_device_id,
-                      "rain_intensity": -1,
-                      "D": d,
-                      "E": e
+                }else{
+                    for (var k = 0; k < len; k++) {
+                            jsonObj_device_id = jsonObj.features[k].properties.device_id;
+                            if (jsonObj_device_id === dev_id) {
+                                jsonObj.features[k].properties["rain_intensity"] = -1;
+																var coords = jsonObj.features[k].geometry.coordinates;
+																var prop_name = jsonObj.features[k].properties.proper_name;
+																var d = jsonObj.features[k].properties.D;
+																var e =  jsonObj.features[k].properties.E;
+																var new_json = {
+																	  "type": "FeatureCollection",
+																	  "features": [{
+																		    "type": "Feature",
+																		    "geometry": {
+																		      "type": "Point",
+																		      "coordinates": coords
+																		    },
+																		    "properties": {
+																		      "A": counter,
+																		      "proper_name": prop_name,
+																		      "device_id": jsonObj_device_id,
+																					"rain_intensity" : -1,
+																		      "D": d,
+																		      "E": e
+																		    }
+																	  	}]
+																		}
+                                vector_layer.addFeatures(geojson_format.read(new_json));
+																console.log(prop_name+' Latest Rainfall Value: -1 mm/hr : ' +dev_id+ ' : '+jsonObj_device_id)
+                            }
                     }
-                  }]
+
                 }
-                //vector_layer.addFeatures(geojson_format.read(jsonObj));
-              console.log(prop_name+' Latest Rainfall Value: -1 mm/hr : ' + dev_id + ' : ' + jsonObj_device_id)
+
+									counter++;
+								  $('#count').text(counter + ' out of ' + arr_id.length + ' stations has been loaded.').fadeIn("slow");
+
+                	$('#help').fadeIn("slow");
+
+                //load map after all the rain_value is updated on the GeoJSON data
+                if (counter == arr_id.length) {
+                    $('#count').fadeOut("slow");
+                }else{
+
+                }
+								//console.log(vector_layer);
+								//vector_layer.addFeatures(geojson_format.read(new_json));
+            }, //success
+            error: function(xhr, ajaxOptions, thrownError) {
+                $('#count').html('<strong><p style="color:red">Unable to access remaining stations. Try again later.</p></strong>');
             }
-          }
-
-        }
-
-        $('#help').fadeIn("slow");
-
-        //ADD NEW JSON FEATURE TO THE VECTOR LAYER
-        if (counter == arr_id.length) {
-          $('#count').fadeOut("slow");
-        } else if (counter <= arr_id.length) {
-          
-        }
-        //console.log(vector_layer);
-              vector_layer.addFeatures(geojson_format.read(new_json));
-      }, //success
-      error: function(xhr, ajaxOptions, thrownError) {
-        $('#count').html('<strong><p style="color:red">Unable to access remaining stations. Try again later.</p></strong>');
-      }
-    });
-  };
+        });
+    };
 });
