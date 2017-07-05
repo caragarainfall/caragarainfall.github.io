@@ -1,9 +1,9 @@
-/*    
-        @licstart  The following is the entire license notice for the 
+/*
+        @licstart  The following is the entire license notice for the
         JavaScript code in this page.
 
-        Copyright (C) 2015-2017 CSU Phil-LiDAR 1
-        http://csulidar1.info/ 
+        Copyright (C) 2015-2017  CSU Phil-LiDAR 1
+        http://csulidar1.info/
         http://www.edselmatt.com/
 
         The JavaScript code in this page is free software: you can
@@ -18,22 +18,16 @@
         may distribute non-source (e.g., minimized or compacted) forms of
         that code without the copy of the GNU GPL normally required by
         section 4, provided you include this license notice and a URL
-        through which recipients can access the Corresponding Source.   
+        through which recipients can access the Corresponding Source.
 
 
         @licend  The above is the entire license notice
         for the JavaScript code in this page.
 */
 
-var vector_layer;
-var geojson_format = new OpenLayers.Format.GeoJSON({
-  internalProjection: new OpenLayers.Projection("EPSG:3857"),
-  externalProjection: new OpenLayers.Projection("EPSG:4326")
-});
-var arr_id;
 
 //https://cors-anywhere.herokuapp.com/http://fmon.asti.dost.gov.ph/dataloc.php?param=rv&dfrm=null&dto=null&numloc=1&locs[]=779&data24=1
-function get_sttion(device_id, station_name, rainVal) {
+function get_sttion(device_id, station_name) {
   $.ajax({
     url: "https://cors-for-rainfall.herokuapp.com/http://fmon.asti.dost.gov.ph/dataloc.php?param=rv&dfrm=null&dto=null&numloc=1&data24=1&locs[]=" + device_id,
     dataType: 'html',
@@ -44,6 +38,8 @@ function get_sttion(device_id, station_name, rainVal) {
     },
     success: function(html_d) {
       var data = jQuery.parseJSON(html_d);
+      var st_name = Object.keys(data);
+      console.log(st_name);
       if (data.length == 0) {
         $('#max_rainfall, #accum').hide();
         $('#container').html('<br/><center><strong><p style="color:red">No data available...try again later.</p></strong></center>');
@@ -131,7 +127,7 @@ function get_sttion(device_id, station_name, rainVal) {
               fontSize: "11px"
             }
           },
-          yAxis: [{ //primary y axis  
+          yAxis: [{ //primary y axis
             min: 0,
             max: 100,
             tickInterval: 20,
@@ -192,7 +188,7 @@ function get_sttion(device_id, station_name, rainVal) {
               }
 
             ]
-          }, { //secondary y axis                            
+          }, { //secondary y axis
             title: {
               text: "Accumulated Rainfall, mm"
             },
@@ -253,7 +249,7 @@ function get_sttion(device_id, station_name, rainVal) {
         } else {
           $('#max_rainfall').html("Maximum Rainfall Intensity: <strong>" + max + " mm/hr</strong>")
         }
-        if (getIndex != 0) {
+        if (diffHours >= 24) {
           $('#accum').html("Total Accumulated Rainfall in the last 24 hrs.: <strong>" + finalData + " mm</strong>")
         } else {
           $('#accum').html("Total Accumulated Rainfall: <strong>" + finalData + " mm</strong>")
@@ -264,7 +260,7 @@ function get_sttion(device_id, station_name, rainVal) {
     error: function(xhr, ajaxOptions, thrownError) {
       $('#container').html('<br/><br/><center><strong><p style="color:red">Status: ' + xhr.status + '\n' + thrownError + '</p></strong></center>');
     }
-  }); //AJAX           
+  }); //AJAX
 }
 
 var map, ctrlSelectFeatures;
@@ -428,12 +424,11 @@ function init() {
     "featureselected": function(e) {
       deviceID = e.feature.attributes.device_id;
       station_name = e.feature.attributes.proper_name;
-      date_rainval = e.feature.attributes.rain_val;
 
       $("#modal-content").modal({
         show: !0
       });
-      get_sttion(deviceID, station_name, date_rainval);
+      get_sttion(deviceID, station_name);
     },
     "featureunselected": function() {
       $("#modal-content").modal({
@@ -445,771 +440,1503 @@ function init() {
   });
 
 }
-var jsonObj;
-$(window).load(function() {
-  init();
-  jsonObj = {
+
+var vector_layer;
+var geojson_format = new OpenLayers.Format.GeoJSON({
+  internalProjection: new OpenLayers.Projection("EPSG:3857"),
+  externalProjection: new OpenLayers.Projection("EPSG:4326")
+});
+
+function plotRainfallStations() {
+  //list of CARAGA Region Rainfall Station Device ID
+  //arr_id = [118,711,779,707,713,155,611,712,710,706,739,566,570,564,592,607,608,609,591,588,568,612,565,563,1561,1387,1388,1575,1567,1577,1568,152,154,153,1203,1204,708,709,1576,780,781,1573,1574,121,120,782,1562,1385,1386,1565,1563];
+
+  //arr_id=['611','1564','1565','368','1561','118','712','779','707','706','711','155','713','710','566','571','568','592','588','567','591','606','589','607','565','587','569','612','564','563','609','739','570','890','893','119','1575','1567','1568','885','152','154','153','1203','1204','708','709','1576','780','781','887','1573','1574','121','120','782','1562','1386','1625','1624','1626','1563','723','2110','1289','960','1197','959','958','1915','131','1449','1914','724','1199','1284','1461','1285','955','957','1198','1287','364','1480','1456','1476','726','129','1457','1152','1460','961','956','1453','316','366','1454','732','731','729','2048','728','730','1450','1912','795','1458','549','1913','362','122'];
+  var arr_id = ['611', '1564', '1565', '368', '1561', '118', '712', '779', '707', '706', '711', '155'];
+  var jsonObj = {
     "type": "FeatureCollection",
     "features": [{
       "type": "Feature",
       "geometry": {
         "type": "Point",
-        "coordinates": [
-          125.481981,
-          8.947345
-        ]
+        "coordinates": [125.5998, 8.73295]
       },
       "properties": {
-        "name": "AGUSAN_DEL_NORTE-BUTUAN_PAGASA_COMPOUND-UAAWS",
-        "device_id": 118,
-        "proper_name": "BUTUAN PAGASA COMPOUND - UAAWS"
+        "A": "1",
+        "proper_name": "LAS NIEVES, MAT-I",
+        "device_id": "611",
+        "D": "Las Nieves",
+        "E": "Agusan del Norte"
       }
     }, {
       "type": "Feature",
       "geometry": {
         "type": "Point",
-        "coordinates": [
-          125.546357,
-          9.121524
-        ]
+        "coordinates": [125.40895, 8.97455]
       },
       "properties": {
-        "name": "AGUSAN_DEL_NORTE-CABADBARAN-RAIN2-",
-        "device_id": 711,
-        "proper_name": "CABADBARAN CITY"
+        "A": "2",
+        "proper_name": "BUENAVISTA, BUENAVISTA MUNICIPAL HALL",
+        "device_id": "1564",
+        "D": "Buenavista",
+        "E": "Agusan del Norte"
       }
     }, {
       "type": "Feature",
       "geometry": {
         "type": "Point",
-        "coordinates": [
-          125.59641,
-          8.95917
-        ]
+        "coordinates": [125.34303, 8.924192]
       },
       "properties": {
-        "name": "AGUSAN_DEL_NORTE-CARAGA_STATE_UNIVERSITY_AMPAYON-RAIN2-",
-        "device_id": 779,
-        "proper_name": "CARAGA STATE UNIVERSITY"
+        "A": "3",
+        "proper_name": "NASIPIT, BRGY. HAMIGUITAN",
+        "device_id": "1565",
+        "D": "Nasipit",
+        "E": "Agusan del Norte"
       }
     }, {
       "type": "Feature",
       "geometry": {
         "type": "Point",
-        "coordinates": [
-          125.692343,
-          9.014568
-        ]
+        "coordinates": [125.578056, 9.449444]
       },
       "properties": {
-        "name": "AGUSAN_DEL_NORTE-DUGYAMAN_ANTICALA-RAIN2-",
-        "device_id": 707,
-        "proper_name": "DUGYAMAN, ANTICALA"
+        "A": "4",
+        "proper_name": "KITCHARAO, KITCHARAO - BSWM_Lufft",
+        "device_id": "368",
+        "D": "Kitcharao",
+        "E": "Agusan del Norte"
       }
     }, {
       "type": "Feature",
       "geometry": {
         "type": "Point",
-        "coordinates": [
-          125.55945,
-          9.24156
-        ]
+        "coordinates": [125.2957, 8.990048]
       },
       "properties": {
-        "name": "AGUSAN_DEL_NORTE-JAGUPIT-RAIN2-",
-        "device_id": 713,
-        "proper_name": "JAGUPIT"
+        "A": "5",
+        "proper_name": "CARMEN, CARMEN MUNICIPAL HALL",
+        "device_id": "1561",
+        "D": "Carmen",
+        "E": "Agusan del Norte"
       }
     }, {
       "type": "Feature",
       "geometry": {
         "type": "Point",
-        "coordinates": [
-          125.569889,
-          9.437884
-        ]
+        "coordinates": [125.516667, 8.933333]
       },
       "properties": {
-        "name": "AGUSAN_DEL_NORTE-KITCHARAO_MUNICIPAL_HALL_COMPOUND-RAIN2-",
-        "device_id": 155,
-        "proper_name": "KITCHARAO MUNICIPAL HALL COMPOUND"
+        "A": "6",
+        "proper_name": "BUTUAN, BUTUAN PAGASA COMPOUND - UAAWS",
+        "device_id": "118",
+        "D": "Butuan",
+        "E": "Agusan del Norte"
       }
     }, {
       "type": "Feature",
       "geometry": {
         "type": "Point",
-        "coordinates": [
-          125.5998,
-          8.73295
-        ]
+        "coordinates": [125.51621, 9.34275]
       },
       "properties": {
-        "name": "AGUSAN_DEL_NORTE-MAT-I-RAIN2-",
-        "device_id": 611,
-        "proper_name": "MAT-I"
+        "A": "7",
+        "proper_name": "JABONGA, POBLACION",
+        "device_id": "712",
+        "D": "Jabonga",
+        "E": "Agusan del Norte"
       }
     }, {
       "type": "Feature",
       "geometry": {
         "type": "Point",
-        "coordinates": [
-          125.51621,
-          9.34275
-        ]
+        "coordinates": [125.59641, 8.95917]
       },
       "properties": {
-        "name": "AGUSAN_DEL_NORTE-POBLACION-RAIN2-",
-        "device_id": 712,
-        "proper_name": "POBLACION"
+        "A": "8",
+        "proper_name": "AMPAYON, BUTUAN CITY, CARAGA STATE UNIVERSITY",
+        "device_id": "779",
+        "D": "Butuan City",
+        "E": "Agusan del Norte"
       }
     }, {
       "type": "Feature",
       "geometry": {
         "type": "Point",
-        "coordinates": [
-          125.642308,
-          9.05916
-        ]
+        "coordinates": [125.692222, 9.014444]
       },
       "properties": {
-        "name": "AGUSAN_DEL_NORTE-SAN_ANTONIO-RAIN2-",
-        "device_id": 710,
-        "proper_name": "SAN ANTONIO"
+        "A": "9",
+        "proper_name": "BUTUAN, DUGYAMAN, ANTICALA",
+        "device_id": "707",
+        "D": "Butuan City",
+        "E": "Agusan del Norte"
       }
     }, {
       "type": "Feature",
       "geometry": {
         "type": "Point",
-        "coordinates": [
-          125.626858,
-          8.825895
-        ]
+        "coordinates": [125.626858, 8.825895]
       },
       "properties": {
-        "name": "AGUSAN_DEL_NORTE-SUMILE-RAIN2-",
-        "device_id": 706,
-        "proper_name": "SUMILE"
+        "A": "10",
+        "proper_name": "BUTUAN CITY, SUMILE",
+        "device_id": "706",
+        "D": "Butuan City",
+        "E": "Agusan del Norte"
       }
     }, {
       "type": "Feature",
       "geometry": {
         "type": "Point",
-        "coordinates": [
-          125.94108,
-          8.550003
-        ]
+        "coordinates": [125.545556, 9.121944]
       },
       "properties": {
-        "name": "AGUSAN_DEL_SUR-AGUSAN_DEL_SUR_PROVINCIAL_CAPITOL-RAIN2-",
-        "device_id": 739,
-        "proper_name": "PROPERIDAD, PROVINCIAL CAPITOL"
+        "A": "11",
+        "proper_name": "CABADBARAN CITY, CABADBARAN",
+        "device_id": "711",
+        "D": "Cabadbaran",
+        "E": "Agusan del Norte"
       }
     }, {
       "type": "Feature",
       "geometry": {
         "type": "Point",
-        "coordinates": [
-          126.01145,
-          8.506214
-        ]
+        "coordinates": [125.578333, 9.45]
       },
       "properties": {
-        "name": "AGUSAN_DEL_SUR-ALEGRIA-RAIN2-",
-        "device_id": 566,
-        "proper_name": "ALEGRIA"
+        "A": "12",
+        "proper_name": "KITCHARAO, KITCHARAO MUNICIPAL HALL COMPOUND",
+        "device_id": "155",
+        "D": "Kitcharao",
+        "E": "Agusan del Norte"
       }
     }, {
       "type": "Feature",
       "geometry": {
         "type": "Point",
-        "coordinates": [
-          126.0028,
-          8.1706
-        ]
+        "coordinates": [125.559444, 9.241389]
       },
       "properties": {
-        "name": "AGUSAN_DEL_SUR-ASSCAT_SAN_TEODORO-RAIN2-",
-        "device_id": 570,
-        "proper_name": "ASSCAT, SAN TEODORO"
+        "A": "13",
+        "proper_name": "SANTIAGO, JAGUPIT",
+        "device_id": "713",
+        "D": "Santiago",
+        "E": "Agusan del Norte"
       }
     }, {
       "type": "Feature",
       "geometry": {
         "type": "Point",
-        "coordinates": [
-          125.7514,
-          8.713
-        ]
+        "coordinates": [125.6298, 8.8245]
       },
       "properties": {
-        "name": "AGUSAN_DEL_SUR-BAYUGAN_CITY_HALL-RAIN2-",
-        "device_id": 564,
-        "proper_name": "BAYUGAN CITY HALL"
+        "A": "14",
+        "proper_name": "REMEDIOS T. ROMUALDEZ, SAN ANTONIO",
+        "device_id": "710",
+        "D": "RTR",
+        "E": "Agusan del Norte"
       }
     }, {
       "type": "Feature",
       "geometry": {
         "type": "Point",
-        "coordinates": [
-          125.7492,
-          8.715886
-        ]
+        "coordinates": [126.02515, 8.47803]
       },
       "properties": {
-        "name": "AGUSAN_DEL_SUR-BAYUGAN_III_NATIONAL_HIGH_SCHOOL-RAIN2-",
-        "device_id": 592,
-        "proper_name": "BAYUGAN III NATIONAL HIGH SCHOOL"
+        "A": "15",
+        "proper_name": "SAN FRANCISCO ALEGRIA",
+        "device_id": "566",
+        "D": "San Francisco",
+        "E": "Agusan del Sur"
       }
     }, {
       "type": "Feature",
       "geometry": {
         "type": "Point",
-        "coordinates": [
-          125.7394,
-          8.6283
-        ]
+        "coordinates": [126.03271, 8.00983]
       },
       "properties": {
-        "name": "AGUSAN_DEL_SUR-DON_FLAVIA-RAIN2-",
-        "device_id": 607,
-        "proper_name": "DOÑA FLAVIA"
+        "A": "16",
+        "proper_name": "SANTA JOSEFA, STA. ISABEL",
+        "device_id": "571",
+        "D": "Sta. Josefa",
+        "E": "Agusan del Sur"
       }
     }, {
       "type": "Feature",
       "geometry": {
         "type": "Point",
-        "coordinates": [
-          125.905236,
-          8.06762
-        ]
+        "coordinates": [126.12321, 8.12093]
       },
       "properties": {
-        "name": "AGUSAN_DEL_SUR-DON_MATEO-RAIN2-",
-        "device_id": 608,
-        "proper_name": "DON MATEO"
+        "A": "17",
+        "proper_name": "MANAT, TRENTO, MANAT ELEM. SCHOOL",
+        "device_id": "568",
+        "D": "Trento",
+        "E": "Agusan del Sur"
       }
     }, {
       "type": "Feature",
       "geometry": {
         "type": "Point",
-        "coordinates": [
-          125.657983,
-          8.67789
-        ]
+        "coordinates": [125.749225, 8.715886]
       },
       "properties": {
-        "name": "AGUSAN_DEL_SUR-ESPERANZA_POBLACION-RAIN2-",
-        "device_id": 609,
-        "proper_name": "ESPERANZA,POBLACION"
+        "A": "18",
+        "proper_name": "BAYUGAN CITY, BAYUGAN III NATIONAL HIGH SCHOOL",
+        "device_id": "592",
+        "D": "Bayugan City",
+        "E": "Agusan del Sur"
       }
     }, {
       "type": "Feature",
       "geometry": {
         "type": "Point",
-        "coordinates": [
-          125.853157,
-          8.185955
-        ]
+        "coordinates": [126.00708, 8.63208]
       },
       "properties": {
-        "name": "AGUSAN_DEL_SUR-LORETO_MUNICIPAL_HALL-RAIN2-",
-        "device_id": 591,
-        "proper_name": "LORETO MUNICIPAL HALL"
+        "A": "19",
+        "proper_name": "PROSPERIDAD, MAGSAYSAY AGUSAN DEL SUR",
+        "device_id": "588",
+        "D": "Prosperidad",
+        "E": "Agusan del Sur"
       }
     }, {
       "type": "Feature",
       "geometry": {
         "type": "Point",
-        "coordinates": [
-          126.00708,
-          8.63208
-        ]
+        "coordinates": [125.95547, 8.0693]
       },
       "properties": {
-        "name": "AGUSAN_DEL_SUR-MAGSAYSAY-RAIN2-",
-        "device_id": 588,
-        "proper_name": "MAGSAYSAY"
+        "A": "20",
+        "proper_name": "VERUELA, VERUELA MUNICIPAL HALL",
+        "device_id": "567",
+        "D": "Veruela",
+        "E": "Agusan del Sur"
       }
     }, {
       "type": "Feature",
       "geometry": {
         "type": "Point",
-        "coordinates": [
-          126.12321,
-          8.12093
-        ]
+        "coordinates": [125.8571, 8.189546]
       },
       "properties": {
-        "name": "AGUSAN_DEL_SUR-MANAT_ELEM._SCHOOL-RAIN2-",
-        "device_id": 568,
-        "proper_name": "MANAT ELEM. SCHOOL"
+        "A": "21",
+        "proper_name": "LORETO, LORETO MUNICIPAL HALL",
+        "device_id": "591",
+        "D": "Loreto",
+        "E": "Agusan del Sur"
       }
     }, {
       "type": "Feature",
       "geometry": {
         "type": "Point",
-        "coordinates": [
-          125.8066,
-          8.2798
-        ]
+        "coordinates": [125.8011, 8.5869]
       },
       "properties": {
-        "name": "AGUSAN_DEL_SUR-PANANGAN-RAIN2-",
-        "device_id": 612,
-        "proper_name": "PANANGAN"
+        "A": "22",
+        "proper_name": "TALACOGON, TALACOGON MUNICIPAL HALL",
+        "device_id": "606",
+        "D": "Talacogon",
+        "E": "Agusan del Sur"
       }
     }, {
       "type": "Feature",
       "geometry": {
         "type": "Point",
-        "coordinates": [
-          126.00091,
-          8.38282
-        ]
+        "coordinates": [125.85662, 8.54236]
       },
       "properties": {
-        "name": "AGUSAN_DEL_SUR-ROSARIO_MUNICIPAL_HALL-RAIN2-",
-        "device_id": 565,
-        "proper_name": "ROSARIO MUNICIPAL HALL"
+        "A": "23",
+        "proper_name": "PROSPERIDAD, SAN VICENTE POSPERIDAD",
+        "device_id": "589",
+        "D": "Prosperidad",
+        "E": "Agusan del Sur"
       }
     }, {
       "type": "Feature",
       "geometry": {
         "type": "Point",
-        "coordinates": [
-          125.6929,
-          8.8193
-        ]
+        "coordinates": [125.7394, 8.6283]
       },
       "properties": {
-        "name": "AGUSAN_DEL_SUR-SIBAGAT_MUNICIPAL_HALL-RAIN2-",
-        "device_id": 563,
-        "proper_name": "SIBAGAT MUNICIPAL HALL"
+        "A": "24",
+        "proper_name": "SAN LUIS, DON FLAVIA",
+        "device_id": "607",
+        "D": "San Luis",
+        "E": "Agusan del Sur"
       }
     }, {
       "type": "Feature",
       "geometry": {
         "type": "Point",
-        "coordinates": [
-          126.017343,
-          9.229546
-        ]
+        "coordinates": [126.00091, 8.38282]
       },
       "properties": {
-        "name": "CARMEN, Carmen Municipal Hall - Rain2",
-        "device_id": 1561,
-        "proper_name": "Carmen Municipal Hall"
+        "A": "25",
+        "proper_name": "ROSARIO, ROSARIO MUNICIPAL HALL",
+        "device_id": "565",
+        "D": "Rosario",
+        "E": "Agusan del Sur"
       }
     }, {
       "type": "Feature",
       "geometry": {
         "type": "Point",
-        "coordinates": [
-          125.7,
-          9.5833
-        ]
+        "coordinates": [125.8011, 8.5869]
       },
       "properties": {
-        "name": "GIGAQUIT, POBLACION - Rain2",
-        "device_id": 1387,
-        "proper_name": "POBLACION"
+        "A": "26",
+        "proper_name": "TALACOGON, DESAMPORADOS",
+        "device_id": "587",
+        "D": "Talacogon",
+        "E": "Agusan del Sur"
       }
     }, {
       "type": "Feature",
       "geometry": {
         "type": "Point",
-        "coordinates": [
-          125.4,
-          9.61666
-        ]
+        "coordinates": [126.1593, 8.01986]
       },
       "properties": {
-        "name": "MALIMONO, SAN ISIDRO - Rain2",
-        "device_id": 1388,
-        "proper_name": "MALIMONO, SAN ISIDRO"
+        "A": "27",
+        "proper_name": "STA MARIA, TRENTO, STA MARIA ELEM SCHOOL",
+        "device_id": "569",
+        "D": "Trento",
+        "E": "Agusan del Sur"
       }
     }, {
       "type": "Feature",
       "geometry": {
         "type": "Point",
-        "coordinates": [
-          125.477278,
-          9.663402
-        ]
+        "coordinates": [125.8066, 8.2798]
       },
       "properties": {
-        "name": "SURIGAO CITY ELEMENTARY SCHOOL, SUKALIANG - Rain2",
-        "device_id": 1575,
-        "proper_name": "SURIGAO CITY ELEMENTARY SCHOOL"
+        "A": "28",
+        "proper_name": "LA PAZ , PANANGAN",
+        "device_id": "612",
+        "D": "La Paz",
+        "E": "Agusan del Sur"
       }
     }, {
       "type": "Feature",
       "geometry": {
         "type": "Point",
-        "coordinates": [
-          125.4954178,
-          9.738635
-        ]
+        "coordinates": [125.7514, 8.713]
       },
       "properties": {
-        "name": "SURIGAO CITY, BONIFACIO ELEMENTARY SCHOOL - Rain2",
-        "device_id": 1567,
-        "proper_name": "BONIFACIO ELEMENTARY SCHOOL"
+        "A": "29",
+        "proper_name": "BAYUGAN CITY, BAYUGAN CITY HALL",
+        "device_id": "564",
+        "D": "Bayugan City",
+        "E": "Agusan del Sur"
       }
     }, {
       "type": "Feature",
       "geometry": {
         "type": "Point",
-        "coordinates": [
-          126.010491,
-          9.13778
-        ]
+        "coordinates": [125.6929, 8.8193]
       },
       "properties": {
-        "name": "CARMEN, CARMEN - Rain2",
-        "device_id": 1577,
-        "proper_name": "CARMEN"
+        "A": "30",
+        "proper_name": "SIBAGAT, SIBAGAT MUNICPAL HALL",
+        "device_id": "563",
+        "D": "Sibagat",
+        "E": "Agusan del Sur"
       }
     }, {
       "type": "Feature",
       "geometry": {
         "type": "Point",
-        "coordinates": [
-          125.506084,
-          9.72303
-        ]
+        "coordinates": [125.7044, 8.7806]
       },
       "properties": {
-        "name": "SURIGAO CITY, QUEZON  - Rain2",
-        "device_id": 1568,
-        "proper_name": "QUEZON "
+        "A": "31",
+        "proper_name": "ESPERANZA, ESPERANZA POBLACION",
+        "device_id": "609",
+        "D": "Esperanza",
+        "E": "Agusan del Sur"
       }
     }, {
       "type": "Feature",
       "geometry": {
         "type": "Point",
-        "coordinates": [
-          125.419528,
-          9.778028
-        ]
+        "coordinates": [125.94108, 8.550003]
       },
       "properties": {
-        "name": "SAN FRANCISCO MUNICIPAL HALL COMPOUND - Rain2",
-        "device_id": 152,
-        "proper_name": "SAN FRANCISCO MUNICIPAL HALL COMPOUND"
+        "A": "32",
+        "proper_name": "PATIN-AY PROSPERIDAD, AGUSAN DEL SUR, PROVINCIAL CAPITOL",
+        "device_id": "739",
+        "D": "Prosperidad",
+        "E": "Agusan del Sur"
       }
     }, {
       "type": "Feature",
       "geometry": {
         "type": "Point",
-        "coordinates": [
-          125.721148,
-          9.568606
-        ]
+        "coordinates": [126.0028, 8.1706]
       },
       "properties": {
-        "name": "CLAVER MUNICIPAL HALL COMPOUND - Rain2",
-        "device_id": 154,
-        "proper_name": "CLAVER MUNICIPAL HALL COMPOUND "
+        "A": "33",
+        "proper_name": "BUNAWAN, ASSCAT, SAN TEODORO",
+        "device_id": "570",
+        "D": "Bunawan",
+        "E": "Agusan del Sur"
       }
     }, {
       "type": "Feature",
       "geometry": {
         "type": "Point",
-        "coordinates": [
-          125.520014,
-          9.652722
-        ]
+        "coordinates": [125.657833, 8.678833]
       },
       "properties": {
-        "name": "SISON ELEMENTARY SCHOOL - Rain2",
-        "device_id": 153,
-        "proper_name": "SISON ELEMENTARY SCHOOL"
+        "A": "34",
+        "proper_name": "ESPERANZA, ESPERANZA - BSWM_Lufft",
+        "device_id": "890",
+        "D": "Esperanza",
+        "E": "Agusan del Sur"
       }
     }, {
       "type": "Feature",
       "geometry": {
         "type": "Point",
-        "coordinates": [
-          125.40162,
-          9.61856
-        ]
+        "coordinates": [125.943417, 8.552306]
       },
       "properties": {
-        "name": "MALIMONO, MALIMONO - Rain2",
-        "device_id": 1203,
-        "proper_name": "MALIMONO"
+        "A": "35",
+        "proper_name": "PROSPERIDAD, PROSPERIDAD - BSWM_Lufft",
+        "device_id": "893",
+        "D": "Prosperidad",
+        "E": "Agusan del Sur"
       }
     }, {
       "type": "Feature",
       "geometry": {
         "type": "Point",
-        "coordinates": [
-          125.69779,
-          9.59577
-        ]
+        "coordinates": [126.033333, 7.983333]
       },
       "properties": {
-        "name": "GIGAQUIT, GIGAQUIT - Rain2",
-        "device_id": 1204,
-        "proper_name": "GIGAQUIT"
+        "A": "36",
+        "proper_name": "STA. JOSEFA, STA. JOSEFA GOVERNMENT SITE - UAAWS",
+        "device_id": "119",
+        "D": "Sta. Josefa",
+        "E": "Agusan del Sur"
       }
     }, {
       "type": "Feature",
       "geometry": {
         "type": "Point",
-        "coordinates": [
-          125.56975,
-          9.55373
-        ]
+        "coordinates": [125.477278, 9.663402]
       },
       "properties": {
-        "name": "TUBOD, TUBOD MUNICIPAL HALL - Rain2",
-        "device_id": 708,
-        "proper_name": "TUBOD MUNICIPAL HALL"
+        "A": "38",
+        "proper_name": "SURIGAO CITY ELEMENTARY SCHOOL, SUKALIANG",
+        "device_id": "1575",
+        "D": "Surigao",
+        "E": "Surigao del Norte"
       }
     }, {
       "type": "Feature",
       "geometry": {
         "type": "Point",
-        "coordinates": [
-          125.523452,
-          9.540541
-        ]
+        "coordinates": [125.495498, 9.738568]
       },
       "properties": {
-        "name": "MAINIT, MAINIT MUNICIPAL HALL - Rain2",
-        "device_id": 709,
-        "proper_name": "MAINIT MUNICIPAL HALL"
+        "A": "39",
+        "proper_name": "SURIGAO CITY, BONIFACIO ELEMENTARY SCHOOL",
+        "device_id": "1567",
+        "D": "Surigao",
+        "E": "Surigao del Norte"
       }
     }, {
       "type": "Feature",
       "geometry": {
         "type": "Point",
-        "coordinates": [
-          126.03578,
-          9.13911
-        ]
+        "coordinates": [125.506, 9.6872]
       },
       "properties": {
-        "name": "LANUZA, Florita Herrera-Irizari Nat’l High School - Rain2",
-        "device_id": 1576,
-        "proper_name": "Florita Herrera-Irizari Nat’l High School"
+        "A": "40",
+        "proper_name": "SURIGAO CITY, QUEZON",
+        "device_id": "1568",
+        "D": "Surigao",
+        "E": "Surigao del Norte"
       }
     }, {
       "type": "Feature",
       "geometry": {
         "type": "Point",
-        "coordinates": [
-          126.038571,
-          8.94671
-        ]
+        "coordinates": [125.557778, 9.536667]
       },
       "properties": {
-        "name": "SAN MIGUEL, TAGO, TINA - Rain2",
-        "device_id": 780,
-        "proper_name": "TAGO, TINA"
+        "A": "41",
+        "proper_name": "MAINIT, MAINIT - BSWM_Lufft",
+        "device_id": "885",
+        "D": "Mainit",
+        "E": "Surigao del Norte"
       }
     }, {
       "type": "Feature",
       "geometry": {
         "type": "Point",
-        "coordinates": [
-          126.28368,
-          8.96935
-        ]
+        "coordinates": [125.421111, 9.776667]
       },
       "properties": {
-        "name": "BAYABAS, BALITE - Rain2",
-        "device_id": 781,
-        "proper_name": "BAYABAS, BALITE"
+        "A": "42",
+        "proper_name": "SAN FRANCISCO, SAN FRANCISCO MUNICIPAL HALL COMPOUND",
+        "device_id": "152",
+        "D": "San Francisco",
+        "E": "Surigao del Norte"
       }
     }, {
       "type": "Feature",
       "geometry": {
         "type": "Point",
-        "coordinates": [
-          125.466466,
-          9.734774
-        ]
+        "coordinates": [125.732709, 9.57376]
       },
       "properties": {
-        "name": "SURIGAO CITY, MAT-I NATIONAL HIGH SCHOOL - Rain2",
-        "device_id": 1573,
-        "proper_name": "MAT-I NATIONAL HIGH SCHOOL"
+        "A": "43",
+        "proper_name": "CLAVER, CLAVER MUNICIPAL HALL COMPOUND",
+        "device_id": "154",
+        "D": "Claver",
+        "E": "Surigao del Norte"
       }
     }, {
       "type": "Feature",
       "geometry": {
         "type": "Point",
-        "coordinates": [
-          126.233591,
-          9.016448
-        ]
+        "coordinates": [125.528611, 9.659722]
       },
       "properties": {
-        "name": "TAGO, TAGO POBLACION - Rain2",
-        "device_id": 1574,
-        "proper_name": "TAGO POBLACION"
+        "A": "44",
+        "proper_name": "SISON, SISON ELEMENTARY SCHOOL",
+        "device_id": "153",
+        "D": "Sison",
+        "E": "Surigao del Norte"
       }
     }, {
       "type": "Feature",
       "geometry": {
         "type": "Point",
-        "coordinates": [
-          126.315939,
-          8.213136
-        ]
+        "coordinates": [125.401667, 9.618611]
       },
       "properties": {
-        "name": "BISLIG CITY, BISLIG CITY NATIONAL HIGH SCHOOL - UAAWS",
-        "device_id": 121,
-        "proper_name": "BISLIG CITY NATIONAL HIGH SCHOOL"
+        "A": "45",
+        "proper_name": "MALIMONO, MALIMONO",
+        "device_id": "1203",
+        "D": "Malimono",
+        "E": "Surigao del Norte"
       }
     }, {
       "type": "Feature",
       "geometry": {
         "type": "Point",
-        "coordinates": [
-          126.202814,
-          8.731382
-        ]
+        "coordinates": [125.697778, 9.595833]
       },
       "properties": {
-        "name": "SAN AGUSTIN, SAN AGUSTIN MUNICIPAL TOWN SQUARE - UAAWS",
-        "device_id": 120,
-        "proper_name": "SAN AGUSTIN MUNICIPAL TOWN SQUARE"
+        "A": "46",
+        "proper_name": "GIGAQUIT, GIGAQUIT",
+        "device_id": "1204",
+        "D": "Gigaquit",
+        "E": "Surigao del Norte"
       }
     }, {
       "type": "Feature",
       "geometry": {
         "type": "Point",
-        "coordinates": [
-          126.16872,
-          9.07375
-        ]
+        "coordinates": [125.569722, 9.553889]
       },
       "properties": {
-        "name": "TANDAG CITY, AWASIAN - Rain2",
-        "device_id": 782,
-        "proper_name": "AWASIAN"
+        "A": "47",
+        "proper_name": "TUBOD, TUBOD MUNICIPAL HALL",
+        "device_id": "708",
+        "D": "Tubod",
+        "E": "Surigao del Norte"
       }
     }, {
       "type": "Feature",
       "geometry": {
         "type": "Point",
-        "coordinates": [
-          125.6202214,
-          9.955568
-        ]
+        "coordinates": [125.523056, 9.540556]
       },
       "properties": {
-        "name": "DINAGAT, DINAGAT - Rain2",
-        "device_id": 1562,
-        "proper_name": "DINAGAT"
+        "A": "48",
+        "proper_name": "MAINIT, MAINIT MUNICIPAL HALL",
+        "device_id": "709",
+        "D": "Mainit",
+        "E": "Surigao del Norte"
       }
     }, {
       "type": "Feature",
       "geometry": {
         "type": "Point",
-        "coordinates": [
-          125.6166,
-          9.95
-        ]
+        "coordinates": [126.05973, 9.23172]
       },
       "properties": {
-        "name": "DINAGAT, CAYETANO - Rain2",
-        "device_id": 1385,
-        "proper_name": "CAYETANO"
+        "A": "49",
+        "proper_name": "LANUZA, Florita Herrera-Irizari Nat’l High School",
+        "device_id": "1576",
+        "D": "lanuza",
+        "E": "Surigao del Sur"
       }
     }, {
       "type": "Feature",
       "geometry": {
         "type": "Point",
-        "coordinates": [
-          125.5888,
-          10.0083
-        ]
+        "coordinates": [126.038611, 8.946861]
       },
       "properties": {
-        "name": "SAN JOSE, LUNA - Rain2",
-        "device_id": 1386,
-        "proper_name": "LUNA"
+        "A": "50",
+        "proper_name": "SAN MIGUEL, TAGO, TINA",
+        "device_id": "780",
+        "D": "San Miguel",
+        "E": "Surigao del Sur"
       }
     }, {
       "type": "Feature",
       "geometry": {
         "type": "Point",
-        "coordinates": [
-          125.34303,
-          8.924192
-        ]
+        "coordinates": [126.28368, 8.96935]
       },
       "properties": {
-        "name": "NASIPIT, BRGY. HAMIGUITAN - Rain2",
-        "device_id": 1565,
-        "proper_name": "BRGY. HAMIGUITAN"
+        "A": "51",
+        "proper_name": "BAYABAS, BALITE",
+        "device_id": "781",
+        "D": "Bayabas",
+        "E": "Surigao del Sur"
       }
     }, {
       "type": "Feature",
       "geometry": {
         "type": "Point",
-        "coordinates": [
-          125.59696,
-          10.0655
-        ]
+        "coordinates": [125.968306, 9.338611]
       },
       "properties": {
-        "name": "BASILISA, BASILISA POBLACION - Rain2",
-        "device_id": 1563,
-        "proper_name": "BASILISA POBLACION"
+        "A": "52",
+        "proper_name": "CANTILAN, CANTILAN - BSWM_Lufft",
+        "device_id": "887",
+        "D": "Cantilan",
+        "E": "Surigao del Sur"
+      }
+    }, {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [125.47825, 9.716331]
+      },
+      "properties": {
+        "A": "53",
+        "proper_name": "SURIGAO CITY, MAT-I NATIONAL HIGH SCHOOL",
+        "device_id": "1573",
+        "D": "Surigao",
+        "E": "Surigao del Sur"
+      }
+    }, {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [126.233861, 9.015889]
+      },
+      "properties": {
+        "A": "54",
+        "proper_name": "TAGO, TAGO POBLACION",
+        "device_id": "1574",
+        "D": "Tago",
+        "E": "Surigao del Sur"
+      }
+    }, {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [126.315939, 8.213136]
+      },
+      "properties": {
+        "A": "55",
+        "proper_name": "BISLIG CITY, BISLIG CITY NATIONAL HIGH SCHOOL - UAAWS",
+        "device_id": "121",
+        "D": "Bislig",
+        "E": "Surigao del Sur"
+      }
+    }, {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [126.223699, 8.743103]
+      },
+      "properties": {
+        "A": "56",
+        "proper_name": "SAN AGUSTIN, SAN AGUSTIN MUNICIPAL TOWN SQUARE - UAAWS",
+        "device_id": "120",
+        "D": "San Agustin",
+        "E": "Surigao del Sur"
+      }
+    }, {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [126.16872, 9.07375]
+      },
+      "properties": {
+        "A": "57",
+        "proper_name": "TANDAG CITY, AWASIAN",
+        "device_id": "782",
+        "D": "Tandag",
+        "E": "Surigao del Sur"
+      }
+    }, {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [125.35, 9.5746]
+      },
+      "properties": {
+        "A": "58",
+        "proper_name": "DINAGAT, DINAGAT",
+        "device_id": "1562",
+        "D": "Dinagat",
+        "E": "Dinagat Islands"
+      }
+    }, {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [125.5888, 10.0083]
+      },
+      "properties": {
+        "A": "59",
+        "proper_name": "SAN JOSE, LUNA",
+        "device_id": "1386",
+        "D": "San Jose",
+        "E": "Dinagat Islands"
+      }
+    }, {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [125.672013, 9.923205]
+      },
+      "properties": {
+        "A": "60",
+        "proper_name": "CAGDIANAO, CAGDIANAO",
+        "device_id": "1625",
+        "D": "Cagdianao",
+        "E": "Dinagat Islands"
+      }
+    }, {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [125.57843, 10.359748]
+      },
+      "properties": {
+        "A": "61",
+        "proper_name": "LORETO, LORETO",
+        "device_id": "1624",
+        "D": "Loreto",
+        "E": "Dinagat Islands"
+      }
+    }, {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [125.533495, 10.195108]
+      },
+      "properties": {
+        "A": "62",
+        "proper_name": "LIBJO, LIBJO",
+        "device_id": "1626",
+        "D": "Libjo",
+        "E": "Dinagat Islands"
+      }
+    }, {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [125.510278, 9.998067]
+      },
+      "properties": {
+        "A": "63",
+        "proper_name": "BASILISA, BASILISA POBLACION",
+        "device_id": "1563",
+        "D": "Basilisa",
+        "E": "Dinagat Islands"
+      }
+    }, {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [125.969264, 7.448167]
+      },
+      "properties": {
+        "A": "64",
+        "proper_name": "MACO, MACO - Waterlevel & Rain2",
+        "device_id": "723",
+        "D": "Maco",
+        "E": "Compostela Valley"
+      }
+    }, {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [126.01519, 7.28042]
+      },
+      "properties": {
+        "A": "65",
+        "proper_name": "MABINI - ANITAPAN NATIONAL HIGH SCHOOL",
+        "device_id": "2110",
+        "D": "Mabini",
+        "E": "Compostela Valley"
+      }
+    }, {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [125.792719, 7.819065]
+      },
+      "properties": {
+        "A": "66",
+        "proper_name": "LAAK, LAAK MUNICIPAL HALL",
+        "device_id": "1289",
+        "D": "Laak",
+        "E": "Compostela Valley"
+      }
+    }, {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [126.063778, 7.75]
+      },
+      "properties": {
+        "A": "67",
+        "proper_name": "MONKAYO, BABAG BRIDGE - Waterlevel & Rain2",
+        "device_id": "1198",
+        "D": "Monkayo",
+        "E": "Compostela Valley"
+      }
+    }, {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [126.10832, 7.70599]
+      },
+      "properties": {
+        "A": "68",
+        "proper_name": "COMPOSTELA, COMPOSTELA - MANGAYON NHS",
+        "device_id": "960",
+        "D": "Compostela",
+        "E": "Compostela Valley"
+      }
+    }, {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [126.089583, 7.676012]
+      },
+      "properties": {
+        "A": "69",
+        "proper_name": "COMPOSTELA, AGUSAN BRIDGE COMPOSTELA - Waterlevel & Rain2",
+        "device_id": "959",
+        "D": "Compostela",
+        "E": "Compostela Valley"
+      }
+    }, {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [126.034139, 7.795833]
+      },
+      "properties": {
+        "A": "70",
+        "proper_name": "MONKAYO, OLAYCON - BRIDGE - Waterlevel & Rain2",
+        "device_id": "1197",
+        "D": "Monkayo",
+        "E": "Compostela Valley"
+      }
+    }, {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [126.02328, 7.383583]
+      },
+      "properties": {
+        "A": "71",
+        "proper_name": "MAKO - TERESA NATIONAL HIGH SCHOOL, BRGY. Teresa",
+        "device_id": "959",
+        "D": "Mako",
+        "E": "Compostela Valley"
+      }
+    }, {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [126.158521, 7.51321]
+      },
+      "properties": {
+        "A": "72",
+        "proper_name": "NEW BATAAN - BRGY. ANDAP -  Rain2",
+        "device_id": "958",
+        "D": "New Bataan",
+        "E": "Compostela Valley"
+      }
+    }, {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [126.21166, 7.455778]
+      },
+      "properties": {
+        "A": "73",
+        "proper_name": "CATEEL, SITIO MAHO, BRGY. ANDAP",
+        "device_id": "1915",
+        "D": "Cateel",
+        "E": "Compostela Valley"
+      }
+    }, {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [126.086, 7.351111]
+      },
+      "properties": {
+        "A": "74",
+        "proper_name": "MARAGUSAN, PSTC COMPOSTELA VALLEY",
+        "device_id": "131",
+        "D": "Monkayo",
+        "E": "Compostela Valley"
+      }
+    }, {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [126.120651, 7.823864]
+      },
+      "properties": {
+        "A": "75",
+        "proper_name": "MONKAYO - MANGANON",
+        "device_id": "1449",
+        "D": "Monkayo",
+        "E": "Compostela Valley"
+      }
+    }, {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [126.366194, 7.677697]
+      },
+      "properties": {
+        "A": "76",
+        "proper_name": "CATEEL, SITIO ANAHAW 35",
+        "device_id": "1914",
+        "D": "Cateel",
+        "E": "Compostela Valley"
+      }
+    }, {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [126.013774, 7.402992]
+      },
+      "properties": {
+        "A": "77",
+        "proper_name": "NEW LEYTE - NEW LEYTE",
+        "device_id": "724",
+        "D": "Mako",
+        "E": "Compostela Valley"
+      }
+    }, {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [126.050434, 7.83]
+      },
+      "properties": {
+        "A": "78",
+        "proper_name": "MONKAYO - KALAW BRIDGE - Waterlevel & Rain2",
+        "device_id": "1199",
+        "D": "Monkayo",
+        "E": "Compostela Valley"
+      }
+    }, {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [126.003941, 7.707788]
+      },
+      "properties": {
+        "A": "79",
+        "proper_name": "MONTEVISTA - MONTEVISTA POBLACION",
+        "device_id": "1284",
+        "D": "Montevista",
+        "E": "Compostela Valley"
+      }
+    }, {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [126.171995, 7.261005]
+      },
+      "properties": {
+        "A": "80",
+        "proper_name": "PANTUKAN - BRGY. ARAIBO - Waterlevel & Rain2",
+        "device_id": "1461",
+        "D": "Pantukan",
+        "E": "Compostela Valley"
+      }
+    }, {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [126.143663, 7.314996]
+      },
+      "properties": {
+        "A": "81",
+        "proper_name": "MARAGUSAN, AGUSAN BRIDGE MARAGUSAN - Waterlevel & Rain2",
+        "device_id": "1285",
+        "D": "Maragusan",
+        "E": "Compostela Valley"
+      }
+    }, {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [126.100521, 7.572987]
+      },
+      "properties": {
+        "A": "82",
+        "proper_name": "NEW BATAAN, BRGY. PANAG - Waterlevel & Rain2",
+        "device_id": "955",
+        "D": "New Bataan",
+        "E": "Compostela Valley"
+      }
+    }, {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [126.134194, 7.578735]
+      },
+      "properties": {
+        "A": "83",
+        "proper_name": "NEW BATAAN - BANGOY BRIDGE - Waterlevel & Rain2",
+        "device_id": "957",
+        "D": "New Bataan",
+        "E": "Compostela Valley"
+      }
+    }, {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [125.920721, 7.526523]
+      },
+      "properties": {
+        "A": "85",
+        "proper_name": "MAWAB - MALINAWON - Waterlevel & Rain2",
+        "device_id": "1287",
+        "D": "Mawab",
+        "E": "Compostela Valley"
+      }
+    }, {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [126.018333, 7.289972]
+      },
+      "properties": {
+        "A": "86",
+        "proper_name": "MARAGUSAN - MARAGUSAN - BSWM_LUFFT",
+        "device_id": "364",
+        "D": "Maragusan",
+        "E": "Compostela Valley"
+      }
+    }, {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [125.992667, 7.57775]
+      },
+      "properties": {
+        "A": "87",
+        "proper_name": "NABUNTURAN - UPAWS",
+        "device_id": "1480",
+        "D": "Nabunturan",
+        "E": "Compostela Valley"
+      }
+    }, {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [125.486414, 7.633998]
+      },
+      "properties": {
+        "A": "88",
+        "proper_name": "TALAINGOD - BRGY. STO. NINO",
+        "device_id": "1456",
+        "D": "Talaingod",
+        "E": "Davao del Norte"
+      }
+    }, {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [125.779748, 7.45242]
+      },
+      "properties": {
+        "A": "89",
+        "proper_name": "TAGUM - PDRRM OFFICE",
+        "device_id": "1476",
+        "D": "Tagum city",
+        "E": "Davao del Norte"
+      }
+    }, {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [125.82408, 7.58712]
+      },
+      "properties": {
+        "A": "90",
+        "proper_name": "NEW CORELLA - NEW CORELLA",
+        "device_id": "726",
+        "D": "New Corella",
+        "E": "Davao del Norte"
+      }
+    }, {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [124.24397, 8.1628]
+      },
+      "properties": {
+        "A": "91",
+        "proper_name": "PANABO - PANABO",
+        "device_id": "129",
+        "D": "Panabo",
+        "E": "Davao del Norte"
+      }
+    }, {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [125.571777, 7.631437]
+      },
+      "properties": {
+        "A": "92",
+        "proper_name": "TALAINGOD - TALAINGOD MUNICIPAL HALL",
+        "device_id": "1457",
+        "D": "Talaingod",
+        "E": "Davao del Norte"
+      }
+    }, {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [125.69877, 7.59273]
+      },
+      "properties": {
+        "A": "93",
+        "proper_name": "KAPALONG - KAPALONG - Waterlevel & Rain 2",
+        "device_id": "1152",
+        "D": "Kapalong",
+        "E": "Davao del Norte"
+      }
+    }, {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [125.749679, 7.438699]
+      },
+      "properties": {
+        "A": "94",
+        "proper_name": "TAGUM CITY - MAGUPISING BRIDGE - Waterlevel & Rain 2",
+        "device_id": "1460",
+        "D": "Tagum city",
+        "E": "Davao del Norte"
+      }
+    }, {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [125.75814, 7.5343]
+      },
+      "properties": {
+        "A": "95",
+        "proper_name": "ASUNCION - LAWANG BRIDGE, ASUNCION - Waterlevel & Rain 2",
+        "device_id": "961",
+        "D": "Asuncion",
+        "E": "Davao del Norte"
+      }
+    }, {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [125.62144, 7.51597]
+      },
+      "properties": {
+        "A": "96",
+        "proper_name": "STO. TOMAS - MENZI BRIDGE - Waterlevel & Rain 2",
+        "device_id": "956",
+        "D": "Sto. Tomas",
+        "E": "Davao del Norte"
+      }
+    }, {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [125.827938, 7.434327]
+      },
+      "properties": {
+        "A": "97",
+        "proper_name": "TAGUM CITY - APOKON BRIDGE - Waterlevel & Rain 2",
+        "device_id": "1453",
+        "D": "Tagum city",
+        "E": "Davao del Norte"
+      }
+    }, {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [125.598222, 7.495]
+      },
+      "properties": {
+        "A": "98",
+        "proper_name": "STO TOMAS - STO TOMAS - BSWM_Lufft",
+        "device_id": "316",
+        "D": "Sto. Tomas",
+        "E": "Davao del Norte"
+      }
+    }, {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [125.704444, 7.362778]
+      },
+      "properties": {
+        "A": "99",
+        "proper_name": "CARMEN - ISING - BSWM_Lufft",
+        "device_id": "366",
+        "D": "Carmen",
+        "E": "Davao del Norte"
+      }
+    }, {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [126.091894, 6.836565]
+      },
+      "properties": {
+        "A": "100",
+        "proper_name": "SAN ISIDRO, MDRRM OFFICE",
+        "device_id": "1454",
+        "D": "San Isidro",
+        "E": "Davao Oriental"
+      }
+    }, {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [126.539245, 7.210315]
+      },
+      "properties": {
+        "A": "101",
+        "proper_name": "MANAY, MANAY",
+        "device_id": "732",
+        "D": "Manay",
+        "E": "Davao Oriental"
+      }
+    }, {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [126.072317, 6.653412]
+      },
+      "properties": {
+        "A": "102",
+        "proper_name": "GOVERNOR GENEROSO, GOVERNOR GENEROSO",
+        "device_id": "731",
+        "D": "Governor Generoso",
+        "E": "Davao Oriental"
+      }
+    }, {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [126.565397, 7.328405]
+      },
+      "properties": {
+        "A": "103",
+        "proper_name": "CARAGA, CARAGA",
+        "device_id": "729",
+        "D": "Caraga",
+        "E": "Davao Oriental"
+      }
+    }, {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [126.46017, 7.37361]
+      },
+      "properties": {
+        "A": "104",
+        "proper_name": "CARAGA, MAGSAYAP ELEMENTARY SCHOOL, SITIO BATIANO, BRGY. SAN PEDRO",
+        "device_id": "2048",
+        "D": "Caraga",
+        "E": "Davao Oriental"
+      }
+    }, {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [126.375944, 7.869846]
+      },
+      "properties": {
+        "A": "105",
+        "proper_name": "BOSTON, BOSTON",
+        "device_id": "728",
+        "D": "Boston",
+        "E": "Davao Oriental"
+      }
+    }, {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [126.448292, 7.79103]
+      },
+      "properties": {
+        "A": "106",
+        "proper_name": "CATEEL, CATEEL",
+        "device_id": "730",
+        "D": "Cateel",
+        "E": "Davao Oriental"
+      }
+    }, {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [126.360598, 7.838637]
+      },
+      "properties": {
+        "A": "107",
+        "proper_name": "BOSTON, MRGY. CABASAGAN",
+        "device_id": "1450",
+        "D": "Boston",
+        "E": "Davao Oriental"
+      }
+    }, {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [126.468611, 7.332222]
+      },
+      "properties": {
+        "A": "108",
+        "proper_name": "CARAGA, PUROK LANSONES, PM SOBRECAREY",
+        "device_id": "1912",
+        "D": "Caraga",
+        "E": "Davao Oriental"
+      }
+    }, {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [126.561331, 7.575417]
+      },
+      "properties": {
+        "A": "109",
+        "proper_name": "BAGANGA, BAGANGA",
+        "device_id": "795",
+        "D": "Baganga",
+        "E": "Davao Oriental"
+      }
+    }, {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [126.113144, 6.829236]
+      },
+      "properties": {
+        "A": "110",
+        "proper_name": "SAN ISIDRO, BRGY. IBA",
+        "device_id": "1458",
+        "D": "San Isidro",
+        "E": "Davao Oriental"
+      }
+    }, {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [126.010952, 6.898034]
+      },
+      "properties": {
+        "A": "111",
+        "proper_name": "LUPON, MDRRMO",
+        "device_id": "549",
+        "D": "Lupon",
+        "E": "Davao Oriental"
+      }
+    }, {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [126.48217, 7.33151]
+      },
+      "properties": {
+        "A": "112",
+        "proper_name": "CARAGA, KAWAIG BRIDGE, PM SOBRECAREY - Waterlevel & Rain2",
+        "device_id": "1913",
+        "D": "Caraga",
+        "E": "Davao Oriental"
+      }
+    }, {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [126.441611, 7.794056]
+      },
+      "properties": {
+        "A": "113",
+        "proper_name": "CATEEL, CATEEL - BSWM_Lufft",
+        "device_id": "362",
+        "D": "Cateel",
+        "E": "Davao Oriental"
+      }
+    }, {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [126.535204, 7.620745]
+      },
+      "properties": {
+        "A": "114",
+        "proper_name": "BAGANGA, BAGANGA MUNICIPAL GROUNDS - UAAWS",
+        "device_id": "122",
+        "D": "Baganga",
+        "E": "Davao Oriental"
       }
     }]
   };
-
-
-  //list of CARAGA Region Rainfall Station Device ID
-  arr_id = [118, 711, 779, 707, 713, 155, 611, 712, 710, 706, 739, 566, 570, 564, 592, 607, 608, 609, 591, 588, 568, 612, 565, 563, 1561, 1387, 1388, 1575, 1567, 1577, 1568, 152, 154, 153, 1203, 1204, 708, 709, 1576, 780, 781, 1573, 1574, 121, 120, 782, 1562, 1385, 1386, 1565, 1563];
-  //arr_id = [118,711,779];
-  var json_device_id,
-    arr = [],
-    jsonObj_device_id,
+  var jsonObj_device_id,
     len = jsonObj.features.length,
     counter = 0,
-    i = 0;
-  for (i; i < arr_id.length; i++) {
-    //console.log(i);
-    let station_id = arr_id[i];
+    i;
+
+  for (i = 0; i < arr_id.length; i++) {
+    let station = arr_id[i];
     $.ajax({
       url: "https://cors-for-rainfall.herokuapp.com/http://fmon.asti.dost.gov.ph/dataloc.php?param=rv&dfrm=null&dto=null&numloc=1&data24=1&locs[]=" + arr_id[i],
       dataType: 'html',
       type: "GET",
       success: function(html_d) {
-        //console.log(html_d);
         var data = jQuery.parseJSON(html_d);
-
         var dev_id = arr_id[counter];
-
-        //console.log("counter :"+ dev_id);
-
-
 
         if ((typeof data === 'object') && !($.isEmptyObject(data))) {
           var latest_rainval;
           var st_name = Object.keys(data);
-          //console.log(st_name);
           var data_len = data[st_name].length;
           var lst_indx = parseInt(data_len - 1);
-
           latest_rainval = parseFloat(data[st_name][lst_indx][1] * 4);
-          //console.log(st_name+' Latest Rainfall Value: '+latest_rainval+' mm/hr : ' +dev_id+ ' : '+jsonObj_device_id)
-
-
-          //console.log(latest_rainval);
           for (var k = 0; k < len; k++) {
             jsonObj_device_id = jsonObj.features[k].properties.device_id;
-            if (jsonObj_device_id === station_id) {
-              //jsonObj.features[k].properties["rain_intensity"] = latest_rainval;
+            if (jsonObj_device_id === station) {
               var coords = jsonObj.features[k].geometry.coordinates;
               var prop_name = jsonObj.features[k].properties.proper_name;
               var d = jsonObj.features[k].properties.D;
@@ -1232,14 +1959,14 @@ $(window).load(function() {
                   }
                 }]
               }
-              vector_layer.addFeatures(geojson_format.read(new_json1));
-             console.log(prop_name+': '+st_name+' Latest Rainfall Value: '+latest_rainval+' mm/hr : ' +dev_id+ ' : '+jsonObj_device_id)
+              addFeaturetoVectorLayer(new_json1);
+              console.log(prop_name + ': ' + st_name + ' Latest Rainfall Value: ' + latest_rainval + ' mm/hr : ' + dev_id + ' : ' + jsonObj_device_id)
             }
           }
         } else {
           for (var k = 0; k < len; k++) {
             jsonObj_device_id = jsonObj.features[k].properties.device_id;
-            if (jsonObj_device_id === station_id) {
+            if (jsonObj_device_id === station) {
               jsonObj.features[k].properties["rain_intensity"] = -1;
               var coords = jsonObj.features[k].geometry.coordinates;
               var prop_name = jsonObj.features[k].properties.proper_name;
@@ -1263,7 +1990,7 @@ $(window).load(function() {
                   }
                 }]
               }
-              vector_layer.addFeatures(geojson_format.read(new_json));
+              addFeaturetoVectorLayer(new_json);
               console.log(prop_name + ' Latest Rainfall Value: -1 mm/hr : ' + dev_id + ' : ' + jsonObj_device_id)
             }
           }
@@ -1272,21 +1999,24 @@ $(window).load(function() {
 
         counter++;
         $('#count').text(counter + ' out of ' + arr_id.length + ' stations has been loaded.').fadeIn("slow");
-
         $('#help').fadeIn("slow");
 
-        //load map after all the rain_value is updated on the GeoJSON data
         if (counter == arr_id.length) {
           $('#count').fadeOut("slow");
-        } else {
-
-        }
-        //console.log(vector_layer);
-        //vector_layer.addFeatures(geojson_format.read(new_json));
+        } else {}
       }, //success
       error: function(xhr, ajaxOptions, thrownError) {
         $('#count').html('<strong><p style="color:red">Unable to access remaining stations. Try again later.</p></strong>');
       }
     });
   };
+}
+
+function addFeaturetoVectorLayer(geojson) {
+  vector_layer.addFeatures(geojson_format.read(geojson));
+}
+
+$(window).load(function() {
+  init();
+  plotRainfallStations();
 });
