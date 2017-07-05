@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html>
-
 <head>
     <title>Caraga Region Online Rainfall Monitoring</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
@@ -15,8 +14,7 @@
             border-radius: 0 !important;
         }
         #accum,
-        #max_rainfall,
-        #help {
+        #max_rainfall{
             display: none
         }
         body,
@@ -40,16 +38,11 @@
             right: 10px;
             z-index: 10000;
         }
-        #count {
-            padding-top: 15px;
-            font-weight: bold;
-            padding-right: 10px;
-        }
         #help {
-            position: absolute;
-            top: 100px;
-            z-index: 999;
-            margin: 10px
+          position: absolute;
+          z-index: 999;
+          margin: 10px;
+          right: 0;
         }
         #footer {
             position: fixed;
@@ -69,15 +62,29 @@
                 z-index: 99
             }
         }
+        #parent {
+          position: relative;
+        }
+        .child {
+          width: 300px;
+          height: 100px;
+          padding: 20px;
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          z-index: 999;
+          margin: -70px 0 0 -170px;
+          text-align: center;
+        }
     </style>
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/openlayers/2.13.1/OpenLayers.js"></script>
     <script type="text/javascript" src="style-rules.js"></script>
-   
 </head>
 
 <body>
-    <div class="container">
+    <div class="container" >
+
         <nav class="navbar navbar-fixed-top navbar-default" role="navigation">
             <div class="container-fluid">
                 <!-- Brand and toggle get grouped for better mobile display -->
@@ -99,7 +106,7 @@
                     </ul>
 
                     <ul class="nav navbar-nav navbar-right">
-                         <li id="count">Getting rainfall data...please wait.</li>
+                         <!--<li id="count">Getting rainfall data...please wait.</li>-->
                     </ul>
                 </div>
                 <!-- /.navbar-collapse -->
@@ -108,24 +115,23 @@
         </nav>
     </div>
 
-    <div class="container"></div>
-    <div class="row" style="width:800px;margin:250px auto 0 auto">
 
-        <div class="alert alert-info alert-dismissible" role="alert" id="help">
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span>
-            </button>
-            <strong><span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span> Click the points on the map to display latest rainfall information.</strong>
-        </div>
-    </div>
-    </div>
-    <div id="map">
-        <div id="legend"><img src="LEGEND.jpg" width="186px" height="176px" />
-        </div>
-    </div>
+      <div class="row" style="width:800px;margin:250px auto 0 auto">
+          <div class="alert alert-info alert-dismissible" role="alert" id="help">
+              <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span>
+              </button>
+              <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span> Click the points on the map to display latest rainfall information.<br/>
+              <small id="count">Loading Rainfall Stations...please wait.</small>
+          </div>
+      </div>
+      <div id="map">
+          <div id="legend"><img src="LEGEND.jpg" width="186px" height="176px" /></div>
+      </div>
 
-    <div id="footer" class="container-fluid">
-        <div class="row" style="margin-left:5px">&copy; 2015-2017 CSU: Phil-LiDAR 1 Project, Caraga State University, Ampayon, Butuan City. All Rights Reserved.</div>
-    </div>
+      <div id="footer" class="container-fluid">
+          <div class="row" style="margin-left:5px">&copy; 2015-2017 CSU: Phil-LiDAR 1 Project, Caraga State University, Ampayon, Butuan City. All Rights Reserved.</div>
+      </div>
+
     <!--modal-->
     <div class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" id="modal-content" aria-hidden="true">
         <div class="modal-dialog modal-lg">
