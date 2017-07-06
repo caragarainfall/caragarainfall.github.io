@@ -63,11 +63,12 @@ function get_sttion(device_id, station_name) {
           firstDate = rainVal[rainVal.length - k - 1][0];
           lastDate = rainVal[rainVal.length - 1][0];
           diffHours = Math.abs(lastDate - firstDate) / 36e5;
+                if (diffHours == 24) {
+                  getIndex = parseFloat(rainVal.length - k - 1)
+                  //console.log('24-hour Rainfall Data is available.');
+                }//else{console.log('24-hour Rainfall Data is NOT available.')}
         }
-        if (diffHours == 24) {
-          getIndex = parseFloat(rainVal.length - k - 1)
-          console.log('24-hour Rainfall Data is available.');
-        }else{console.log('24-hour Rainfall Data is NOT available.')}
+        
 
         for (i = getIndex; i < rainVal.length; i++) {
           var accumRain = parseFloat(rainVal[i][1]);
