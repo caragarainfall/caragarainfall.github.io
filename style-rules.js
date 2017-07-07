@@ -2235,7 +2235,6 @@ function plotRainfallStations() {
           for (var k = 0; k < len; k++) {
             jsonObj_device_id = jsonObj.features[k].properties.device_id;
             if (jsonObj_device_id == station) {
-              jsonObj.features[k].properties["rain_intensity"] = -1;
               var coords = jsonObj.features[k].geometry.coordinates;
               var prop_name = jsonObj.features[k].properties.proper_name;
               var d = jsonObj.features[k].properties.Province;
@@ -2268,7 +2267,6 @@ function plotRainfallStations() {
 
         counter++;
         $('#count').text(counter + ' out of ' + arr_id.length + ' stations have been loaded.');
-        $('#help');
 
         if (counter == arr_id.length) {
           //$('#count').fadeOut("slow");
