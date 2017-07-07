@@ -510,7 +510,7 @@ var jsonObj = {
     "FIELD8":""
     }
   },
-  {
+  /**{
     "type": "Feature",
     "geometry": {
        "type": "Point",
@@ -524,7 +524,7 @@ var jsonObj = {
     "Province":"Agusan del Norte",
     "FIELD8":""
     }
-  },
+  },**/
   {
     "type": "Feature",
     "geometry": {
