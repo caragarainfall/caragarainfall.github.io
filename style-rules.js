@@ -63,12 +63,13 @@ function get_sttion(device_id, station_name) {
           firstDate = rainVal[rainVal.length - k - 1][0];
           lastDate = rainVal[rainVal.length - 1][0];
           diffHours = Math.abs(lastDate - firstDate) / 36e5;
-                if (diffHours == 24) {
-                  getIndex = parseFloat(rainVal.length - k - 1)
-                  //console.log('24-hour Rainfall Data is available.');
-                }//else{console.log('24-hour Rainfall Data is NOT available.')}
+          if (diffHours == 24) {
+            getIndex = parseInt(rainVal.length - k - 1);
+            break;
+            //console.log('24-hour Rainfall Data is available.');
+          }//else{console.log('24-hour Rainfall Data is NOT available.')}
         }
-        
+
 
         for (i = getIndex; i < rainVal.length; i++) {
           var accumRain = parseFloat(rainVal[i][1]);
@@ -92,10 +93,10 @@ function get_sttion(device_id, station_name) {
           },
           credits: false,
           title: {
-            text: station_name
+            text: "Rainfall in "+station_name
           },
           subtitle: {
-            text: 'Source: <a href="http://fmon.asti.dost.gov.ph/weather/predict/" target="_blank">PREDICT, DOST</a>',
+            text: 'aw <br/> Source: <a href="http://fmon.asti.dost.gov.ph/weather/predict/" target="_blank">PREDICT, DOST</a>',
             x: -20
           },
           xAxis: {
@@ -473,7 +474,7 @@ var jsonObj = {
     },
     "properties": {
     "No":2,
-    "proper_name":"BUENAVISTA, BUENAVISTA MUNICIPAL HALL",
+    "proper_name":"BUENAVISTA MUNICIPAL HALL",
     "device_id":1564,
     "City_Municipality":"Buenavista",
     "Province":"Agusan del Norte",
@@ -510,7 +511,7 @@ var jsonObj = {
     "FIELD8":""
     }
   },
-  /**{
+  {
     "type": "Feature",
     "geometry": {
        "type": "Point",
@@ -524,7 +525,7 @@ var jsonObj = {
     "Province":"Agusan del Norte",
     "FIELD8":""
     }
-  },**/
+  },
   {
     "type": "Feature",
     "geometry": {
@@ -563,7 +564,7 @@ var jsonObj = {
     },
     "properties": {
     "No":8,
-    "proper_name":"AMPAYON, BUTUAN CITY, CARAGA STATE UNIVERSITY",
+    "proper_name":"CARAGA STATE UNIVERSITY",
     "device_id":779,
     "City_Municipality":"Butuan City",
     "Province":"Agusan del Norte",
@@ -578,7 +579,7 @@ var jsonObj = {
     },
     "properties": {
     "No":9,
-    "proper_name":"BUTUAN, DUGYAMAN, ANTICALA",
+    "proper_name":"DUGYAMAN, ANTICALA",
     "device_id":707,
     "City_Municipality":"Butuan City",
     "Province":"Agusan del Norte",
@@ -713,7 +714,7 @@ var jsonObj = {
     },
     "properties": {
     "No":18,
-    "proper_name":"BAYUGAN CITY, BAYUGAN III NATIONAL HIGH SCHOOL",
+    "proper_name":"BAYUGAN III NATIONAL HIGH SCHOOL",
     "device_id":592,
     "City_Municipality":"Bayugan City",
     "Province":"Agusan del Sur",
@@ -743,7 +744,7 @@ var jsonObj = {
     },
     "properties": {
     "No":20,
-    "proper_name":"VERUELA, VERUELA MUNICIPAL HALL",
+    "proper_name":"VERUELA MUNICIPAL HALL",
     "device_id":567,
     "City_Municipality":"Veruela",
     "Province":"Agusan del Sur",
@@ -758,7 +759,7 @@ var jsonObj = {
     },
     "properties": {
     "No":21,
-    "proper_name":"LORETO, LORETO MUNICIPAL HALL",
+    "proper_name":"LORETO MUNICIPAL HALL",
     "device_id":591,
     "City_Municipality":"Loreto",
     "Province":"Agusan del Sur",
@@ -773,7 +774,7 @@ var jsonObj = {
     },
     "properties": {
     "No":22,
-    "proper_name":"TALACOGON, TALACOGON MUNICIPAL HALL",
+    "proper_name":"TALACOGON MUNICIPAL HALL",
     "device_id":606,
     "City_Municipality":"Talacogon",
     "Province":"Agusan del Sur",
@@ -788,7 +789,7 @@ var jsonObj = {
     },
     "properties": {
     "No":23,
-    "proper_name":"PROSPERIDAD, SAN VICENTE POSPERIDAD",
+    "proper_name":"SAN VICENTE PROSPERIDAD",
     "device_id":589,
     "City_Municipality":"Prosperidad",
     "Province":"Agusan del Sur",
@@ -818,7 +819,7 @@ var jsonObj = {
     },
     "properties": {
     "No":25,
-    "proper_name":"ROSARIO, ROSARIO MUNICIPAL HALL",
+    "proper_name":"ROSARIO MUNICIPAL HALL",
     "device_id":565,
     "City_Municipality":"Rosario",
     "Province":"Agusan del Sur",
@@ -848,7 +849,7 @@ var jsonObj = {
     },
     "properties": {
     "No":27,
-    "proper_name":"STA MARIA, TRENTO, STA MARIA ELEM SCHOOL",
+    "proper_name":"STA. MARIA ELEM SCHOOL",
     "device_id":569,
     "City_Municipality":"Trento",
     "Province":"Agusan del Sur",
@@ -878,7 +879,7 @@ var jsonObj = {
     },
     "properties": {
     "No":29,
-    "proper_name":"BAYUGAN CITY, BAYUGAN CITY HALL",
+    "proper_name":"BAYUGAN CITY HALL",
     "device_id":564,
     "City_Municipality":"Bayugan City",
     "Province":"Agusan del Sur",
@@ -893,7 +894,7 @@ var jsonObj = {
     },
     "properties": {
     "No":30,
-    "proper_name":"SIBAGAT, SIBAGAT MUNICPAL HALL",
+    "proper_name":"SIBAGAT MUNICPAL HALL",
     "device_id":563,
     "City_Municipality":"Sibagat",
     "Province":"Agusan del Sur",
@@ -908,7 +909,7 @@ var jsonObj = {
     },
     "properties": {
     "No":31,
-    "proper_name":"ESPERANZA, ESPERANZA POBLACION",
+    "proper_name":"ESPERANZA POBLACION",
     "device_id":609,
     "City_Municipality":"Esperanza",
     "Province":"Agusan del Sur",
@@ -923,7 +924,7 @@ var jsonObj = {
     },
     "properties": {
     "No":32,
-    "proper_name":"PATIN-AY PROSPERIDAD, AGUSAN DEL SUR, PROVINCIAL CAPITOL",
+    "proper_name":"PATIN-AY PROSPERIDAD, PROVINCIAL CAPITOL",
     "device_id":739,
     "City_Municipality":"Prosperidad",
     "Province":"Agusan del Sur",
@@ -953,7 +954,7 @@ var jsonObj = {
     },
     "properties": {
     "No":34,
-    "proper_name":"ESPERANZA, ESPERANZA - BSWM_Lufft",
+    "proper_name":"ESPERANZA - BSWM_Lufft",
     "device_id":890,
     "City_Municipality":"Esperanza",
     "Province":"Agusan del Sur",
@@ -968,7 +969,7 @@ var jsonObj = {
     },
     "properties": {
     "No":35,
-    "proper_name":"PROSPERIDAD, PROSPERIDAD - BSWM_Lufft",
+    "proper_name":"PROSPERIDAD - BSWM_Lufft",
     "device_id":893,
     "City_Municipality":"Prosperidad",
     "Province":"Agusan del Sur",
@@ -983,14 +984,14 @@ var jsonObj = {
     },
     "properties": {
     "No":36,
-    "proper_name":"STA. JOSEFA, STA. JOSEFA GOVERNMENT SITE - UAAWS",
+    "proper_name":"STA. JOSEFA GOVERNMENT SITE - UAAWS",
     "device_id":119,
     "City_Municipality":"Sta. Josefa",
     "Province":"Agusan del Sur",
     "FIELD8":""
     }
   },
-  {
+  /**{
     "type": "Feature",
     "geometry": {
        "type": "Point",
@@ -1005,6 +1006,7 @@ var jsonObj = {
     "FIELD8":""
     }
   },
+  **/
   {
     "type": "Feature",
     "geometry": {
@@ -1013,7 +1015,7 @@ var jsonObj = {
     },
     "properties": {
     "No":38,
-    "proper_name":"SURIGAO CITY ELEMENTARY SCHOOL, SUKALIANG",
+    "proper_name":"SURIGAO CITY ELEMENTARY SCHOOL",
     "device_id":1575,
     "City_Municipality":"Surigao",
     "Province":"Surigao del Norte",
@@ -1058,7 +1060,7 @@ var jsonObj = {
     },
     "properties": {
     "No":41,
-    "proper_name":"MAINIT, MAINIT - BSWM_Lufft",
+    "proper_name":"MAINIT - BSWM_Lufft",
     "device_id":885,
     "City_Municipality":"Mainit",
     "Province":"Surigao del Norte",
@@ -1073,7 +1075,7 @@ var jsonObj = {
     },
     "properties": {
     "No":42,
-    "proper_name":"SAN FRANCISCO, SAN FRANCISCO MUNICIPAL HALL COMPOUND",
+    "proper_name":"SAN FRANCISCO MUNICIPAL HALL COMPOUND",
     "device_id":152,
     "City_Municipality":"San Francisco",
     "Province":"Surigao del Norte",
@@ -1088,7 +1090,7 @@ var jsonObj = {
     },
     "properties": {
     "No":43,
-    "proper_name":"CLAVER, CLAVER MUNICIPAL HALL COMPOUND",
+    "proper_name":"CLAVER MUNICIPAL HALL COMPOUND",
     "device_id":154,
     "City_Municipality":"Claver",
     "Province":"Surigao del Norte",
@@ -1103,7 +1105,7 @@ var jsonObj = {
     },
     "properties": {
     "No":44,
-    "proper_name":"SISON, SISON ELEMENTARY SCHOOL",
+    "proper_name":"SISON ELEMENTARY SCHOOL",
     "device_id":153,
     "City_Municipality":"Sison",
     "Province":"Surigao del Norte",
@@ -1118,7 +1120,7 @@ var jsonObj = {
     },
     "properties": {
     "No":45,
-    "proper_name":"MALIMONO, MALIMONO",
+    "proper_name":"MALIMONO",
     "device_id":1203,
     "City_Municipality":"Malimono",
     "Province":"Surigao del Norte",
@@ -1133,7 +1135,7 @@ var jsonObj = {
     },
     "properties": {
     "No":46,
-    "proper_name":"GIGAQUIT, GIGAQUIT",
+    "proper_name":"GIGAQUIT",
     "device_id":1204,
     "City_Municipality":"Gigaquit",
     "Province":"Surigao del Norte",
@@ -1148,7 +1150,7 @@ var jsonObj = {
     },
     "properties": {
     "No":47,
-    "proper_name":"TUBOD, TUBOD MUNICIPAL HALL",
+    "proper_name":"TUBOD MUNICIPAL HALL",
     "device_id":708,
     "City_Municipality":"Tubod",
     "Province":"Surigao del Norte",
@@ -1163,7 +1165,7 @@ var jsonObj = {
     },
     "properties": {
     "No":48,
-    "proper_name":"MAINIT, MAINIT MUNICIPAL HALL",
+    "proper_name":"MAINIT, MUNICIPAL HALL",
     "device_id":709,
     "City_Municipality":"Mainit",
     "Province":"Surigao del Norte",
@@ -1178,9 +1180,9 @@ var jsonObj = {
     },
     "properties": {
     "No":49,
-    "proper_name":"LANUZA, Florita Herrera-Irizari Nat’l High School",
+    "proper_name":"Florita Herrera-Irizari Nat’l High School",
     "device_id":1576,
-    "City_Municipality":"lanuza",
+    "City_Municipality":"Lanuza",
     "Province":"Surigao del Sur",
     "FIELD8":""
     }
@@ -1193,7 +1195,7 @@ var jsonObj = {
     },
     "properties": {
     "No":50,
-    "proper_name":"SAN MIGUEL, TAGO, TINA",
+    "proper_name":"TAGO, TINA",
     "device_id":780,
     "City_Municipality":"San Miguel",
     "Province":"Surigao del Sur",
@@ -1223,7 +1225,7 @@ var jsonObj = {
     },
     "properties": {
     "No":52,
-    "proper_name":"CANTILAN, CANTILAN - BSWM_Lufft",
+    "proper_name":"CANTILAN - BSWM_Lufft",
     "device_id":887,
     "City_Municipality":"Cantilan",
     "Province":"Surigao del Sur",
@@ -1268,7 +1270,7 @@ var jsonObj = {
     },
     "properties": {
     "No":55,
-    "proper_name":"BISLIG CITY, BISLIG CITY NATIONAL HIGH SCHOOL - UAAWS",
+    "proper_name":"BISLIG CITY NATIONAL HIGH SCHOOL - UAAWS",
     "device_id":121,
     "City_Municipality":"Bislig",
     "Province":"Surigao del Sur",
@@ -1283,7 +1285,7 @@ var jsonObj = {
     },
     "properties": {
     "No":56,
-    "proper_name":"SAN AGUSTIN, SAN AGUSTIN MUNICIPAL TOWN SQUARE - UAAWS",
+    "proper_name":"SAN AGUSTIN MUNICIPAL TOWN SQUARE - UAAWS",
     "device_id":120,
     "City_Municipality":"San Agustin",
     "Province":"Surigao del Sur",
@@ -1403,7 +1405,7 @@ var jsonObj = {
     },
     "properties": {
     "No":64,
-    "proper_name":"MACO, MACO - Waterlevel & Rain2",
+    "proper_name":"MACO, MACO ",
     "device_id":723,
     "City_Municipality":"Maco",
     "Province":"Compostela Valley",
@@ -1418,7 +1420,7 @@ var jsonObj = {
     },
     "properties": {
     "No":65,
-    "proper_name":"MABINI - ANITAPAN NATIONAL HIGH SCHOOL",
+    "proper_name":"ANITAPAN NATIONAL HIGH SCHOOL",
     "device_id":2110,
     "City_Municipality":"Mabini",
     "Province":"Compostela Valley",
@@ -1433,7 +1435,7 @@ var jsonObj = {
     },
     "properties": {
     "No":66,
-    "proper_name":"LAAK, LAAK MUNICIPAL HALL",
+    "proper_name":"LAAK MUNICIPAL HALL",
     "device_id":1289,
     "City_Municipality":"Laak",
     "Province":"Compostela Valley",
@@ -1448,7 +1450,7 @@ var jsonObj = {
     },
     "properties": {
     "No":67,
-    "proper_name":"MONKAYO, BABAG BRIDGE - Waterlevel & Rain2",
+    "proper_name":"MONKAYO, BABAG BRIDGE",
     "device_id":1198,
     "City_Municipality":"Monkayo",
     "Province":"Compostela Valley",
@@ -1463,7 +1465,7 @@ var jsonObj = {
     },
     "properties": {
     "No":68,
-    "proper_name":"COMPOSTELA, COMPOSTELA - MANGAYON NHS",
+    "proper_name":"COMPOSTELA - MANGAYON NHS",
     "device_id":960,
     "City_Municipality":"Compostela",
     "Province":"Compostela Valley",
@@ -1478,7 +1480,7 @@ var jsonObj = {
     },
     "properties": {
     "No":69,
-    "proper_name":"COMPOSTELA, AGUSAN BRIDGE COMPOSTELA - Waterlevel & Rain2",
+    "proper_name":"COMPOSTELA, AGUSAN BRIDGE COMPOSTELA",
     "device_id":959,
     "City_Municipality":"Compostela",
     "Province":"Compostela Valley",
@@ -1493,7 +1495,7 @@ var jsonObj = {
     },
     "properties": {
     "No":70,
-    "proper_name":"MONKAYO, OLAYCON - BRIDGE - Waterlevel & Rain2",
+    "proper_name":"MONKAYO, OLAYCON - BRIDGE",
     "device_id":1197,
     "City_Municipality":"Monkayo",
     "Province":"Compostela Valley",
@@ -1508,7 +1510,7 @@ var jsonObj = {
     },
     "properties": {
     "No":71,
-    "proper_name":"MAKO - TERESA NATIONAL HIGH SCHOOL, BRGY. Teresa",
+    "proper_name":"MAKO - TERESA NATIONAL HIGH SCHOOL",
     "device_id":959,
     "City_Municipality":"Mako",
     "Province":"Compostela Valley",
@@ -1523,7 +1525,7 @@ var jsonObj = {
     },
     "properties": {
     "No":72,
-    "proper_name":"NEW BATAAN - BRGY. ANDAP -  Rain2",
+    "proper_name":"NEW BATAAN - BRGY. ANDAP",
     "device_id":958,
     "City_Municipality":"New Bataan",
     "Province":"Compostela Valley",
@@ -1538,7 +1540,7 @@ var jsonObj = {
     },
     "properties": {
     "No":73,
-    "proper_name":"CATEEL, SITIO MAHO, BRGY. ANDAP",
+    "proper_name":"CATEEL, SITIO MAHO",
     "device_id":1915,
     "City_Municipality":"Cateel",
     "Province":"Compostela Valley",
@@ -1613,7 +1615,7 @@ var jsonObj = {
     },
     "properties": {
     "No":78,
-    "proper_name":"MONKAYO - KALAW BRIDGE - Waterlevel & Rain2",
+    "proper_name":"MONKAYO - KALAW BRIDGE",
     "device_id":1199,
     "City_Municipality":"Monkayo",
     "Province":"Compostela Valley",
@@ -1643,7 +1645,7 @@ var jsonObj = {
     },
     "properties": {
     "No":80,
-    "proper_name":"PANTUKAN - BRGY. ARAIBO - Waterlevel & Rain2",
+    "proper_name":"PANTUKAN - BRGY. ARAIBO",
     "device_id":1461,
     "City_Municipality":"Pantukan",
     "Province":"Compostela Valley",
@@ -1658,7 +1660,7 @@ var jsonObj = {
     },
     "properties": {
     "No":81,
-    "proper_name":"MARAGUSAN, AGUSAN BRIDGE MARAGUSAN - Waterlevel & Rain2",
+    "proper_name":"MARAGUSAN, AGUSAN BRIDGE MARAGUSAN",
     "device_id":1285,
     "City_Municipality":"Maragusan",
     "Province":"Compostela Valley",
@@ -1673,7 +1675,7 @@ var jsonObj = {
     },
     "properties": {
     "No":82,
-    "proper_name":"NEW BATAAN, BRGY. PANAG - Waterlevel & Rain2",
+    "proper_name":"NEW BATAAN, BRGY. PANAG",
     "device_id":955,
     "City_Municipality":"New Bataan",
     "Province":"Compostela Valley",
@@ -1688,7 +1690,7 @@ var jsonObj = {
     },
     "properties": {
     "No":83,
-    "proper_name":"NEW BATAAN - BANGOY BRIDGE - Waterlevel & Rain2",
+    "proper_name":"NEW BATAAN - BANGOY BRIDGE",
     "device_id":957,
     "City_Municipality":"New Bataan",
     "Province":"Compostela Valley",
@@ -1703,7 +1705,7 @@ var jsonObj = {
     },
     "properties": {
     "No":84,
-    "proper_name":"MONKAYO - UNION BRIDGE - Waterlevel & Rain2",
+    "proper_name":"MONKAYO - UNION BRIDGE",
     "device_id":1198,
     "City_Municipality":"Monkayo",
     "Province":"Compostela Valley",
@@ -1718,7 +1720,7 @@ var jsonObj = {
     },
     "properties": {
     "No":85,
-    "proper_name":"MAWAB - MALINAWON - Waterlevel & Rain2",
+    "proper_name":"MAWAB - MALINAWON",
     "device_id":1287,
     "City_Municipality":"Mawab",
     "Province":"Compostela Valley",
@@ -1733,7 +1735,7 @@ var jsonObj = {
     },
     "properties": {
     "No":86,
-    "proper_name":"MARAGUSAN - MARAGUSAN - BSWM_LUFFT",
+    "proper_name":"MARAGUSAN - BSWM_LUFFT",
     "device_id":364,
     "City_Municipality":"Maragusan",
     "Province":"Compostela Valley",
@@ -1793,7 +1795,7 @@ var jsonObj = {
     },
     "properties": {
     "No":90,
-    "proper_name":"NEW CORELLA - NEW CORELLA",
+    "proper_name":"NEW CORELLA",
     "device_id":726,
     "City_Municipality":"New Corella",
     "Province":"Davao del Norte",
@@ -1808,7 +1810,7 @@ var jsonObj = {
     },
     "properties": {
     "No":91,
-    "proper_name":"PANABO - PANABO",
+    "proper_name":"PANABO",
     "device_id":129,
     "City_Municipality":"Panabo",
     "Province":"Davao del Norte",
@@ -1823,7 +1825,7 @@ var jsonObj = {
     },
     "properties": {
     "No":92,
-    "proper_name":"TALAINGOD - TALAINGOD MUNICIPAL HALL",
+    "proper_name":"TALAINGOD MUNICIPAL HALL",
     "device_id":1457,
     "City_Municipality":"Talaingod",
     "Province":"Davao del Norte",
@@ -1913,7 +1915,7 @@ var jsonObj = {
     },
     "properties": {
     "No":98,
-    "proper_name":"STO TOMAS - STO TOMAS - BSWM_Lufft",
+    "proper_name":"STO TOMAS - BSWM_Lufft",
     "device_id":316,
     "City_Municipality":"Sto. Tomas",
     "Province":"Davao del Norte",
@@ -1958,7 +1960,7 @@ var jsonObj = {
     },
     "properties": {
     "No":101,
-    "proper_name":"MANAY, MANAY",
+    "proper_name":"MANAY",
     "device_id":732,
     "City_Municipality":"Manay",
     "Province":"Davao Oriental",
@@ -1973,7 +1975,7 @@ var jsonObj = {
     },
     "properties": {
     "No":102,
-    "proper_name":"GOVERNOR GENEROSO, GOVERNOR GENEROSO",
+    "proper_name":"GOVERNOR GENEROSO",
     "device_id":731,
     "City_Municipality":"Governor Generoso",
     "Province":"Davao Oriental",
@@ -2003,7 +2005,7 @@ var jsonObj = {
     },
     "properties": {
     "No":104,
-    "proper_name":"CARAGA, MAGSAYAP ELEMENTARY SCHOOL, SITIO BATIANO, BRGY. SAN PEDRO",
+    "proper_name":"CARAGA, MAGSAYAP ELEMENTARY SCHOOL",
     "device_id":2048,
     "City_Municipality":"Caraga",
     "Province":"Davao Oriental",
@@ -2018,7 +2020,7 @@ var jsonObj = {
     },
     "properties": {
     "No":105,
-    "proper_name":"BOSTON, BOSTON",
+    "proper_name":"BOSTON",
     "device_id":728,
     "City_Municipality":"Boston",
     "Province":"Davao Oriental",
@@ -2033,7 +2035,7 @@ var jsonObj = {
     },
     "properties": {
     "No":106,
-    "proper_name":"CATEEL, CATEEL",
+    "proper_name":"CATEEL",
     "device_id":730,
     "City_Municipality":"Cateel",
     "Province":"Davao Oriental",
@@ -2063,7 +2065,7 @@ var jsonObj = {
     },
     "properties": {
     "No":108,
-    "proper_name":"CARAGA, PUROK LANSONES, PM SOBRECAREY",
+    "proper_name":"PUROK LANSONES, PM SOBRECAREY",
     "device_id":1912,
     "City_Municipality":"Caraga",
     "Province":"Davao Oriental",
@@ -2078,7 +2080,7 @@ var jsonObj = {
     },
     "properties": {
     "No":109,
-    "proper_name":"BAGANGA, BAGANGA",
+    "proper_name":"BAGANGA",
     "device_id":795,
     "City_Municipality":"Baganga",
     "Province":"Davao Oriental",
@@ -2123,7 +2125,7 @@ var jsonObj = {
     },
     "properties": {
     "No":112,
-    "proper_name":"CARAGA, KAWAIG BRIDGE, PM SOBRECAREY - Waterlevel & Rain2",
+    "proper_name":"KAWAIG BRIDGE, PM SOBRECAREY",
     "device_id":1913,
     "City_Municipality":"Caraga",
     "Province":"Davao Oriental",
@@ -2138,7 +2140,7 @@ var jsonObj = {
     },
     "properties": {
     "No":113,
-    "proper_name":"CATEEL, CATEEL - BSWM_Lufft",
+    "proper_name":"CATEEL - BSWM_Lufft",
     "device_id":362,
     "City_Municipality":"Cateel",
     "Province":"Davao Oriental",
@@ -2153,7 +2155,7 @@ var jsonObj = {
     },
     "properties": {
     "No":114,
-    "proper_name":"BAGANGA, BAGANGA MUNICIPAL GROUNDS - UAAWS",
+    "proper_name":"BAGANGA MUNICIPAL GROUNDS",
     "device_id":122,
     "City_Municipality":"Baganga",
     "Province":"Davao Oriental",
@@ -2175,7 +2177,7 @@ function stationNames(){
 
 function plotRainfallStations() {
   //list of CARAGA Region Rainfall Station Device ID
-  var arr_id=[611,1564,1565,368,1561,118,712,779,707,706,711,155,713,710,566,571,568,592,588,567,591,606,589,607,565,587,569,612,564,563,609,739,570,890,893,119,1575,1567,1568,885,152,154,153,1203,1204,708,709,1576,780,781,887,1573,1574,121,120,782,1562,1386,1625,1624,1626,1563,723,2110,1289,960,1197,959,958,1915,131,1449,1914,724,1199,1284,1461,1285,955,957,1198,1287,364,1480,1456,1476,726,129,1457,1152,1460,961,956,1453,316,366,1454,732,731,729,2048,728,730,1450,1912,795,1458,549,1913,362,122];
+  var arr_id=[611,1564,1565,368,1561,118,712,779,707,706,711,155,713,710,566,571,568,592,588,567,591,606,589,607,565,587,569,612,564,563,609,739,570,890,893,119,1575,1567,1568,885,152,154,153,1203,1204,708,709,1576,780,781,887,1573,1574,121,120,782,1562,1386,1625,1624,1626,1563,723,2110,1289,1198,960,959,1197,959,958,1915,131,1449,1914,724,1199,1284,1461,1285,955,957,1198,1287,364,1480,1456,1476,726,129,1457,1152,1460,961,956,1453,316,366,1454,732,731,729,2048,728,730,1450,1912,795,1458,549,1913,362,122];
   //var arr_id = [118,711,779,707,713,155,611,712,710,706,739,566,570,564,592,607,608,609,591,588,568,612,565,563,1561,1387,1388,1575,1567,1577,1568,152,154,153,1203,1204,708,709,1576,780,781,1573,1574,121,120,782,1562,1385,1386,1565,1563];
   //var arr_id = [118,711,779,707,713,155,611,712,710,706,739];
   var jsonObj_device_id,
@@ -2196,11 +2198,12 @@ function plotRainfallStations() {
       success: function(html_d) {
         var data = jQuery.parseJSON(html_d);
         if ((typeof data === 'object') && !($.isEmptyObject(data))) {
-          var latest_rainval;
+          var latest_rainval, latest_date;
           var st_name = Object.keys(data);
           var data_len = data[st_name].length;
           var lst_indx = parseInt(data_len - 1);
           latest_rainval = parseFloat(data[st_name][lst_indx][1] * 4);
+          latest_date = data[st_name][lst_indx][0];
           for (var k = 0; k < len; k++) {
             jsonObj_device_id = jsonObj.features[k].properties.device_id;
             if (jsonObj_device_id == station) {
@@ -2221,6 +2224,7 @@ function plotRainfallStations() {
                     "proper_name": prop_name,
                     "device_id": jsonObj_device_id,
                     "rain_intensity": latest_rainval,
+                    "date_acquired": Highcharts.dateFormat("%b %e, %Y %I:%M %p", new Date(latest_date)),
                     "province": d,
                     "municipality": e
                   }
@@ -2252,6 +2256,7 @@ function plotRainfallStations() {
                     "proper_name": prop_name,
                     "device_id": jsonObj_device_id,
                     "rain_intensity": -1,
+                    "date_acquired": "No Data",
                     "province": d,
                     "municipality": e
                   }
@@ -2269,8 +2274,9 @@ function plotRainfallStations() {
         $('#count').text(counter + ' out of ' + arr_id.length + ' stations have been loaded.');
 
         if (counter == arr_id.length) {
-          //$('#count').fadeOut("slow");
-          console.log("Stations with data: "+ with_data+'-- Stations without Data: '+no_data)
+          $('#count').text('You can also export the data by clicking the "Export as CSV" button on the navigation bar.');
+          exportToCsv("caraga_rainfall.csv");
+          //console.log("Stations with data: "+ with_data+'-- Stations without Data: '+no_data)
         } else {}
       }, //success
       error : function(xhr, textStatus, errorThrown ) {
@@ -2291,6 +2297,7 @@ function plotRainfallStations() {
   };
 }
 
+
 function addFeaturetoVectorLayer(geojson) {
   vector_layer.addFeatures(geojson_format.read(geojson));
 }
@@ -2307,6 +2314,58 @@ function filterRainfall(gaugeS) {
   }
 }
 
+function exportToCsv(filename) {
+  var rows = [['Device ID','Station Name/Location','Municipality', 'Province', 'Date Acquired', 'Rainfall Value (mm/hr.)']];
+  for (var f = 0; f < vector_layer.features.length; f++) {
+       var st_name = vector_layer.features[f].attributes.proper_name;
+       var st_date = vector_layer.features[f].attributes.date_acquired;
+       var st_id = vector_layer.features[f].attributes.device_id;
+       var st_muni = vector_layer.features[f].attributes.municipality;
+       var st_prov = vector_layer.features[f].attributes.province;
+       var st_rain_val = vector_layer.features[f].attributes.rain_intensity == -1 ? "No Data" :  vector_layer.features[f].attributes.rain_intensity;
+       rows.push([st_id,st_name, st_muni, st_prov, st_date, st_rain_val]);
+  }
+
+	var processRow = function (row) {
+		var finalVal = '';
+		for (var j = 0; j < row.length; j++) {
+			var innerValue = row[j] === null ? '' : row[j].toString();
+			if (row[j] instanceof Date) {
+				innerValue = row[j].toLocaleString();
+			};
+			var result = innerValue.replace(/"/g, '""');
+			if (result.search(/("|,|\n)/g) >= 0)
+				result = '"' + result + '"';
+			if (j > 0)
+				finalVal += ',';
+			finalVal += result;
+		}
+		return finalVal + '\n';
+	};
+
+	var csvFile = '';
+	for (var i = 0; i < rows.length; i++) {
+		csvFile += processRow(rows[i]);
+	}
+
+	var blob = new Blob([csvFile], { type: 'text/csv;charset=utf-8;' });
+	if (navigator.msSaveBlob) { // IE 10+
+		navigator.msSaveBlob(blob, filename);
+	} else {
+		var link = document.getElementById("csv");
+		if (link.download !== undefined) { // feature detection
+			// Browsers that support HTML5 download attribute
+			var url = URL.createObjectURL(blob);
+			link.setAttribute("href", url);
+			link.setAttribute("download", filename);
+			//link.style.visibility = 'hidden';
+			//document.body.appendChild(link);
+			//link.click();
+			//document.body.removeChild(link);
+		}
+	}
+}
+
 $(window).load(function() {
   init();
   plotRainfallStations();
@@ -2320,10 +2379,12 @@ $(window).load(function() {
     var gauge = document.getElementById("rain_gauge").value;
     filterRainfall(gauge);
   },false);
+
   document.getElementById("reset").addEventListener("click", function(event){
     map.setCenter(new OpenLayers.LonLat(125.74, 9.13).transform(
       new OpenLayers.Projection("EPSG:4326"),
       map.getProjectionObject()
     ), 9);
   });
+
 });
