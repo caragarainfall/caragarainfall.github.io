@@ -96,7 +96,7 @@ function get_sttion(device_id, station_name) {
             text: "Rainfall in "+station_name
           },
           subtitle: {
-            text: 'aw <br/> Source: <a href="http://fmon.asti.dost.gov.ph/weather/predict/" target="_blank">PREDICT, DOST</a>',
+            text: 'Source: <a href="http://fmon.asti.dost.gov.ph/weather/predict/" target="_blank">PREDICT, DOST</a>',
             x: -20
           },
           xAxis: {
