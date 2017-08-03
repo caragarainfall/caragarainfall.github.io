@@ -5,7 +5,7 @@
         Copyright (C) 2015-2017  CSU Phil-LiDAR 1
         http://csulidar1.info/
         http://www.edselmatt.com/
-        Last Updated: 07/06/2017
+        Last Updated: 08/03/2017
 
         The JavaScript code in this page is free software: you can
         redistribute it and/or modify it under the terms of the GNU
@@ -28,7 +28,7 @@
 
 
 //https://cors-anywhere.herokuapp.com/http://fmon.asti.dost.gov.ph/dataloc.php?param=rv&dfrm=null&dto=null&numloc=1&locs[]=779&data24=1
-function get_sttion(device_id, station_name) {
+function get_sttion(device_id, station_name, loc) {
   $.ajax({
     url: "https://cors-for-rainfall.herokuapp.com/http://fmon.asti.dost.gov.ph/dataloc.php?param=rv&dfrm=null&dto=null&numloc=1&data24=1&locs[]=" + device_id,
     dataType: 'html',
@@ -96,7 +96,7 @@ function get_sttion(device_id, station_name) {
             text: "Rainfall in "+station_name
           },
           subtitle: {
-            text: 'Source: <a href="http://fmon.asti.dost.gov.ph/weather/predict/" target="_blank">PREDICT, DOST</a>',
+            text: 'Location: '+loc+' <br/> Source: <a href="http://fmon.asti.dost.gov.ph/weather/predict/" target="_blank">PREDICT, DOST</a>',
             x: -20
           },
           xAxis: {
@@ -426,11 +426,11 @@ function init() {
     "featureselected": function(e) {
       deviceID = e.feature.attributes.device_id;
       station_name = e.feature.attributes.proper_name;
-
+      loc = e.feature.attributes.municipality+', '+e.feature.attributes.province;
       $("#modal-content").modal({
         show: !0
       });
-      get_sttion(deviceID, station_name);
+      get_sttion(deviceID, station_name, loc);
     },
     "featureunselected": function() {
       $("#modal-content").modal({
@@ -2183,9 +2183,9 @@ function plotRainfallStations() {
   var jsonObj_device_id,
     len = jsonObj.features.length,
     counter = 0,
-    i,
-    no_data = 0,
-    with_data = 0;
+    i;
+    //no_data = 0,
+    //with_data = 0;
 
   for (i = 0; i < arr_id.length; i++) {
     let station = arr_id[i];
@@ -2198,12 +2198,23 @@ function plotRainfallStations() {
       success: function(html_d) {
         var data = jQuery.parseJSON(html_d);
         if ((typeof data === 'object') && !($.isEmptyObject(data))) {
-          var latest_rainval, latest_date;
+          var latest_rainval, latest_date, rain_intensity,tofixAccum;
           var st_name = Object.keys(data);
           var data_len = data[st_name].length;
+          var rainVal = data[st_name];
+          var finalAccum = 0;
+
           var lst_indx = parseInt(data_len - 1);
           latest_rainval = parseFloat(data[st_name][lst_indx][1] * 4);
+          rain_intensity = latest_rainval == 0 ?'No Rain' :latest_rainval > 0 && latest_rainval < 2.5 ?'Light' :latest_rainval > 2.5 && latest_rainval < 7.5 ?'Moderate' :latest_rainval > 7.5 && latest_rainval < 15 ?'Heavy' :latest_rainval > 15 && latest_rainval < 30 ?'Intense' : 'Torrential';
           latest_date = data[st_name][lst_indx][0];
+
+          for (var i = 0; i < data_len; i++) {
+            var accumRain = parseFloat(data[st_name][i][1]);
+            finalAccum = parseFloat(finalAccum + accumRain);
+            tofixAccum = finalAccum.toFixed(1);
+          }
+
           for (var k = 0; k < len; k++) {
             jsonObj_device_id = jsonObj.features[k].properties.device_id;
             if (jsonObj_device_id == station) {
@@ -2211,6 +2222,7 @@ function plotRainfallStations() {
               var prop_name = jsonObj.features[k].properties.proper_name;
               var d = jsonObj.features[k].properties.Province;
               var e = jsonObj.features[k].properties.City_Municipality;
+              var d_a = Highcharts.dateFormat("%b %e, %Y %I:%M %p", new Date(latest_date));
               var new_json1 = {
                 "type": "FeatureCollection",
                 "features": [{
@@ -2224,15 +2236,24 @@ function plotRainfallStations() {
                     "proper_name": prop_name,
                     "device_id": jsonObj_device_id,
                     "rain_intensity": latest_rainval,
-                    "date_acquired": Highcharts.dateFormat("%b %e, %Y %I:%M %p", new Date(latest_date)),
+                    "accum_val": tofixAccum,
+                    "date_acquired": d_a,
                     "province": d,
                     "municipality": e
                   }
                 }]
               }
               addFeaturetoVectorLayer(new_json1);
-              with_data++;
+              //with_data++;
               console.log(prop_name + ': ' + st_name + '(Device ID: '+jsonObj_device_id+') Latest Rainfall Value: ' + latest_rainval + ' mm/hr')
+              //$('#count').text(prop_name + ': ' + st_name + '(Device ID: '+jsonObj_device_id+') Latest Rainfall Value: ' + latest_rainval + ' mm/hr');
+              $('#myTable tbody').append(
+                '<tr><td>'+prop_name+', '+e+', '+d+'</td>'+
+                '<td>'+d_a+'</td>'+
+                '<td>'+latest_rainval+' mm/hr.</td>'+
+                '<td>'+tofixAccum+' mm.</td>'+
+                '<td>'+rain_intensity+'</td></tr>'
+              )
             }
           }
         } else {
@@ -2256,6 +2277,7 @@ function plotRainfallStations() {
                     "proper_name": prop_name,
                     "device_id": jsonObj_device_id,
                     "rain_intensity": -1,
+                    "accum_val": "No Data",
                     "date_acquired": "No Data",
                     "province": d,
                     "municipality": e
@@ -2263,8 +2285,13 @@ function plotRainfallStations() {
                 }]
               }
               addFeaturetoVectorLayer(new_json);
-              no_data++;
+              //no_data++;
               console.log(prop_name + '(Device ID: '+jsonObj_device_id+') Latest Rainfall Value: No DATA')
+              //$('#count').text(prop_name + '(Device ID: '+jsonObj_device_id+') Latest Rainfall Value: No DATA');
+              $('#myTable tbody').append(
+                '<tr><td>'+prop_name+', '+e+', '+d+'</td>'+
+                '<td colspan="4" align="center">No Data</td></tr>'
+              )
             }
           }
 
@@ -2309,21 +2336,23 @@ function filterRainfall(gaugeS) {
            featsel = vector_layer.features[f];
            bounds = featsel.geometry.bounds;
            map.zoomToExtent(new OpenLayers.Bounds(bounds.right,bounds.top,bounds.left,bounds.bottom));
+           ctrlSelectFeatures.clickFeature(featsel);
            break;
        }
   }
 }
 
 function exportToCsv(filename) {
-  var rows = [['Device ID','Station Name/Location','Municipality', 'Province', 'Date Acquired', 'Rainfall Value (mm/hr.)']];
+  var rows = [['Device ID','Station Name/Location','Municipality', 'Province', 'Date Acquired', 'Rainfall Value (mm/hr.)', 'Accumulated Rainfall in the last 24 hrs. (mm.)']];
   for (var f = 0; f < vector_layer.features.length; f++) {
        var st_name = vector_layer.features[f].attributes.proper_name;
        var st_date = vector_layer.features[f].attributes.date_acquired;
        var st_id = vector_layer.features[f].attributes.device_id;
        var st_muni = vector_layer.features[f].attributes.municipality;
        var st_prov = vector_layer.features[f].attributes.province;
+       var st_accum = vector_layer.features[f].attributes.accum_val;
        var st_rain_val = vector_layer.features[f].attributes.rain_intensity == -1 ? "No Data" :  vector_layer.features[f].attributes.rain_intensity;
-       rows.push([st_id,st_name, st_muni, st_prov, st_date, st_rain_val]);
+       rows.push([st_id,st_name, st_muni, st_prov, st_date, st_rain_val, st_accum]);
   }
 
 	var processRow = function (row) {
@@ -2364,6 +2393,24 @@ function exportToCsv(filename) {
 			//document.body.removeChild(link);
 		}
 	}
+}
+
+function filterTable(evt) {
+  var input, filter, table, tr, td, i;
+  input = document.getElementById("searchKey");
+  filter = input.value.toUpperCase();
+  table = document.getElementById("myTable");
+  tr = table.getElementsByTagName("tr");
+  for (i = 0; i < tr.length; i++) {
+    td = tr[i].getElementsByTagName("td")[0];
+    if (td) {
+      if (td.innerHTML.toUpperCase().indexOf(filter) > -1) {
+        tr[i].style.display = "";
+      } else {
+        tr[i].style.display = "none";
+      }
+    }
+  }
 }
 
 $(window).load(function() {
