@@ -111,7 +111,8 @@
                               </div>
                               <button type="submit" class="btn btn-primary">Go</button>
                               <button type="reset" class="btn btn-default" id="reset">Reset</button>
-                                <a  class="btn btn-default" role="button" id="csv">Export as CSV</a>
+                              <a  class="btn btn-default" role="button" id="csv">Export as CSV</a>
+                              <a  class="btn btn-default" role="button" data-toggle="modal" data-target="#modal-content1">View in Table</a>
                            </form>
 
                         </li>
@@ -133,7 +134,7 @@
               <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span>
               </button>
               <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span> Click the points on the map to display latest rainfall information.<br/>
-              <small id="count">Loading Rainfall Stations...please wait.</small>
+              <small id="count">Loading...please wait.</small>
           </div>
       </div>
       <div id="map">
@@ -162,9 +163,43 @@
             </div>
         </div>
     </div>
+
+
+    <div class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" id="modal-content1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content" style="padding:5px">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="padding:10px"><span aria-hidden="true">&times;</span>
+                </button>
+                <div class="table-responsive">
+                  <div>
+                    <div class="form-group">
+                      <input class="form-control" id="searchKey" placeholder="type location here..." type="text" onkeyup="filterTable()">
+                    </div>
+                    <div class="table-responsive ">
+                      <table class="table table-bordered table-striped" id="myTable">
+                        <thead>
+                          <tr>
+                            <th>Location</th>
+                            <th>Latest Reading (Date &amp; Time) </th>
+                            <th>Rainfall Value </th>
+                            <th>Accumulated Rainfall in the last 24 hours</th>
+                            <th>Rainfall Intensity</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <!--data-->
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Modal -->
      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
-     <script type="text/javascript" src="bootstrap3-typeahead.min.js"></script>
+     <script type="text/javascript" src="js/bootstrap3-typeahead.min.js"></script>
     <script type="text/javascript" src="highcharts.js"></script>
 </body>
 
