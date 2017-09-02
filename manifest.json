@@ -8,7 +8,7 @@
 	"background_color": "#EEE",
 	"icons":[
 		{
-		"src": "PhilLidar_Logo_new-150x150.png",
+		"src": "https://raw.githubusercontent.com/caragarainfall/caragarainfall.github.io/master/PhilLidar_Logo_new-150x150.png",
 		"sizes": "150x150",
 		"type": "image/png"
 		}
