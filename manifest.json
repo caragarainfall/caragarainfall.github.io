@@ -7,8 +7,10 @@
 	"theme_color": "#e7e7e7",
 	"background_color": "#EEE",
 	"icons":[
+		{
 		"src": "PhilLidar_Logo_new-150x150.png",
 		"sizes": "150x150",
 		"type": "image/png"
+		}
 	]
 }
