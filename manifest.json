@@ -4,7 +4,7 @@
 	"start_url": "/",
 	"scope": "/",
 	"display": "standalone",
-	"theme_color": "#130085",
+	"theme_color": "#e7e7e7",
 	"background_color": "#EEE",
 	"icons":[
 		"src": "PhilLidar_Logo_new-150x150.png",
