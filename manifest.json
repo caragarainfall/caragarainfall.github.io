@@ -1,0 +1,14 @@
+{
+	"name": "Caraga Region Online Rainfall Monitoring",
+	"short_name": "XII Rainfall Monitoring",
+	"start_url": "/",
+	"scope": "/",
+	"display": "standalone",
+	"theme_color": "#130085",
+	"background_color": "#EEE",
+	"icons":[
+		"src": "PhilLidar_Logo_new-150x150.png",
+		"sizes": "150x150",
+		"type": "image/png"
+	]
+}
