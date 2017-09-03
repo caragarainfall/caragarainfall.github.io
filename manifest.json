@@ -11,6 +11,11 @@
 		"src": "https://raw.githubusercontent.com/caragarainfall/caragarainfall.github.io/master/PhilLidar_Logo_new-150x150.png",
 		"sizes": "150x150",
 		"type": "image/png"
-		}
+		},
+		{  
+	      "src": "https://raw.githubusercontent.com/caragarainfall/caragarainfall.github.io/master/imp_logos.PNG",  
+	      "sizes": "512x512",  
+	      "type": "image/png"  
+	    }
 	]
 }
