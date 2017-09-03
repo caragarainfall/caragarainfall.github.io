@@ -11,9 +11,7 @@ var cacheFiles = [
 	'https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js',
 	'https://cdnjs.cloudflare.com/ajax/libs/openlayers/2.13.1/OpenLayers.js',
 	'https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js',
-	'https://a.tile.openstreetmap.org',
-	'https://b.tile.openstreetmap.org',
-	'https://c.tile.openstreetmap.org'
+	'https://www.openstreetmap.org/'
 ]
 
 
