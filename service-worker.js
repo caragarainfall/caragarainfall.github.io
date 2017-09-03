@@ -12,7 +12,9 @@ var cacheFiles = [
 	'https://cdnjs.cloudflare.com/ajax/libs/openlayers/2.13.1/OpenLayers.js',
 	'https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js',
 	'https://www.openstreetmap.org/',
-	'https://a.tile.openstreetmap.org/'
+	'//a.tile.openstreetmap.org/',
+        '//b.tile.openstreetmap.org/',
+        '//c.tile.openstreetmap.org/'
 ]
 
 
